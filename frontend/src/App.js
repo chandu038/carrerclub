@@ -129,12 +129,14 @@ export default function App() {
     return (
       <div style={{ minHeight: "100vh", background: "#0a0e1a", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", fontFamily: "'Satoshi',sans-serif" }}>
         <style>{`
-          @keyframes spin    { to { transform: rotate(360deg); } }
-          @keyframes fadeUp  { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-          @keyframes blink   { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
-          @keyframes float   { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
-          @keyframes pulse   { 0%,100% { transform: scale(1); opacity: 0.7; } 50% { transform: scale(1.08); opacity: 1; } }
-        `}</style>
+        body { margin: 0; padding: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        @keyframes spin    { to { transform: rotate(360deg); } }
+        @keyframes fadeUp  { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes blink   { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+        @keyframes float   { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
+        @keyframes pulse   { 0%,100% { transform: scale(1); opacity: 0.7; } 50% { transform: scale(1.08); opacity: 1; } }
+      `}</style>
 
         {/* Floating icons */}
         <div style={{ position: "relative", width: 160, height: 160, marginBottom: 32 }}>
