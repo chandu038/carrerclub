@@ -6,16 +6,17 @@ import { useWindowWidth }                            from "./hooks/useWindowWidt
 import { useAuth }                                   from "./hooks/useAuth";
 import { fetchJobs, createJob, updateJob, deleteJob } from "./firebase/jobService";
 
-import Icon       from "./components/shared/Icon";
-import JobDialog  from "./components/dialogs/JobDialog";
-import Footer     from "./components/shared/Footer";
+import Icon          from "./components/shared/Icon";
+import JobDialog     from "./components/dialogs/JobDialog";
+import Footer        from "./components/shared/Footer";
 
-import HomeView   from "./views/HomeView";
-import BrowseView from "./views/BrowseView";
-import SavedView  from "./views/SavedView";
-import AlertsView from "./views/AlertsView";
-import AdminView  from "./views/AdminView";
-import LoginView  from "./views/LoginView";
+import HomeView      from "./views/HomeView";
+import BrowseView    from "./views/BrowseView";
+import SavedView     from "./views/SavedView";
+import AlertsView    from "./views/AlertsView";
+import AdminView     from "./views/AdminView";
+import LoginView     from "./views/LoginView";
+import NotFoundView  from "./views/NotFoundView";
 
 export default function App() {
   const [isDark,      setIsDark]      = useState(true);
@@ -35,10 +36,8 @@ export default function App() {
   const isAdmin   = location.pathname.startsWith("/admin");
   const savedCount = jobs.filter((j) => j.saved).length;
 
-  // Firebase Auth
   const { user, loading: authLoading, logout } = useAuth();
 
-  // ── Load jobs from Firestore on mount ──────────────────────────────────────
   useEffect(() => {
     fetchJobs()
       .then((data) => setJobs(data))
@@ -51,7 +50,6 @@ export default function App() {
     setTimeout(() => setToast({ on: false, msg: "" }), 2800);
   };
 
-  // ── Save/Unsave (session only — not stored in DB) ──────────────────────────
   const handleSave = useCallback((id) => {
     let wasSaved = false;
     setJobs((js) => {
@@ -63,7 +61,6 @@ export default function App() {
     setTimeout(() => showToast(wasSaved ? "Unsaved." : "Saved!"), 0);
   }, []);
 
-  // ── Admin: Firestore handlers ──────────────────────────────────────────────
   const handleAddJob = async (data) => {
     const postedISO = new Date().toISOString();
     const id = await createJob(data);
@@ -83,18 +80,16 @@ export default function App() {
     showToast("Job deleted.");
   };
 
-  // ── Logout ─────────────────────────────────────────────────────────────────
   const handleLogout = async () => {
     try {
       await logout();
-      navigate("/admin/flashfeed2025"); // redirect to login
+      navigate("/admin/flashfeed2025");
       showToast("Logged out successfully.");
     } catch {
       showToast("Logout failed. Try again.");
     }
   };
 
-  // ── Suggestions hover ──────────────────────────────────────────────────────
   const onSuggEnter = () => { clearTimeout(suggTimer.current); setSuggOpen(true); };
   const onSuggLeave = () => { suggTimer.current = setTimeout(() => setSuggOpen(false), 120); };
 
@@ -107,11 +102,10 @@ export default function App() {
   const NAV_COLORS = [T.accent, T.a3, T.a4, T.a5];
 
   const SUGG_LINKS = [
-    { label: "Send Mail", emoji: "✉️", color: T.a2, bg: "rgba(255,100,80,0.10)", brd: "rgba(255,100,80,0.25)", href: "https://mail.google.com/mail/?view=cm&to=darapanenic1@gmail.com&su=Job Suggestion — Carrer Club" },
+    { label: "Send Mail", emoji: "✉️", color: T.a2, bg: "rgba(255,100,80,0.10)", brd: "rgba(255,100,80,0.25)", href: "https://mail.google.com/mail/?view=cm&to=darapanenic1@gmail.com&su=Job Suggestion — CareerClub" },
     { label: "Telegram",  emoji: "✈️", color: T.a3, bg: "rgba(56,189,248,0.10)", brd: "rgba(56,189,248,0.25)", href: "https://t.me/undefined890" },
   ];
 
-  // ── Auth loading spinner ───────────────────────────────────────────────────
   if (authLoading) {
     return (
       <div style={{ minHeight: "100vh", background: isDark ? "#141414" : "#e8e4dd", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -139,7 +133,7 @@ export default function App() {
       {!isAdmin && (
         <nav style={{ position: "sticky", top: 0, zIndex: 300, backdropFilter: "blur(20px)", background: T.navBg, borderBottom: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 1.5rem", height: 56, flexShrink: 0 }}>
           <div onClick={() => navigate("/")} style={{ fontFamily: "'Clash Display',sans-serif", fontSize: 20, fontWeight: 700, letterSpacing: -0.5, color: T.text, cursor: "pointer", display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
-            Carrer<span style={{ color: T.accent }}>Club</span>
+            Career<span style={{ color: T.accent }}>Club</span>
             <span style={{ fontSize: 10, fontWeight: 700, background: T.ftBg, color: T.ftFg, padding: "2px 7px", borderRadius: 20 }}>JOBS</span>
           </div>
 
@@ -163,7 +157,6 @@ export default function App() {
           )}
 
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            {/* Suggestions dropdown */}
             {!isMobile && (
               <div style={{ position: "relative" }} onMouseEnter={onSuggEnter} onMouseLeave={onSuggLeave}>
                 <button style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 14px", borderRadius: 20, background: T.ms2, border: `1px solid ${T.accent}44`, color: T.accent, fontSize: 13, fontWeight: 600, cursor: "default", fontFamily: "'Satoshi',sans-serif", whiteSpace: "nowrap" }}>
@@ -216,7 +209,7 @@ export default function App() {
           <div onClick={() => setMenuOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 400, background: "rgba(0,0,0,0.7)", backdropFilter: "blur(6px)" }} />
           <div style={{ position: "fixed", top: 0, right: 0, zIndex: 500, width: 280, height: "100vh", background: "rgba(10,14,26,0.97)", backdropFilter: "blur(20px)", borderLeft: "1px solid rgba(100,130,255,0.18)", display: "flex", flexDirection: "column", animation: "slideIn 0.25s ease" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "1rem 1.25rem", borderBottom: "1px solid rgba(100,130,255,0.12)", background: "rgba(124,109,255,0.08)" }}>
-              <div style={{ fontFamily: "'Clash Display',sans-serif", fontSize: 18, fontWeight: 700, color: "#e8eeff" }}>Carrer<span style={{ color: T.accent }}>Club</span></div>
+              <div style={{ fontFamily: "'Clash Display',sans-serif", fontSize: 18, fontWeight: 700, color: "#e8eeff" }}>Career<span style={{ color: T.accent }}>Club</span></div>
               <button onClick={() => setMenuOpen(false)} style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <Icon path={I.close} size={16} color="#8896b3" />
               </button>
@@ -291,7 +284,8 @@ export default function App() {
                 />
               : <LoginView T={T} />
           } />
-          <Route path="*" element={<HomeView jobs={jobs} T={T} isMobile={isMobile} setSelJob={setSelJob} onSave={handleSave} />} />
+          {/* 404 — catches all unknown URLs */}
+          <Route path="*" element={<NotFoundView T={T} />} />
         </Routes>
       </main>
 
