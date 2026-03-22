@@ -25,7 +25,7 @@ export default function Footer({ T }) {
         <div>
           <div style={{ fontFamily: "'Clash Display',sans-serif", fontSize: 22, fontWeight: 700, letterSpacing: -0.5, color: T.text, marginBottom: 8, cursor: "pointer" }}
             onClick={() => navigate("/")}>
-            Flash<span style={{ color: T.accent }}>Feed</span>
+            Carrer<span style={{ color: T.accent }}>Club</span>
             <span style={{ fontSize: 10, fontWeight: 700, background: T.ftBg, color: T.ftFg, padding: "2px 7px", borderRadius: 20, marginLeft: 8 }}>JOBS</span>
           </div>
           <p style={{ fontSize: 13, color: T.text2, lineHeight: 1.7, maxWidth: 240 }}>
@@ -56,6 +56,29 @@ export default function Footer({ T }) {
           </div>
         </div>
 
+        {/* Company links */}
+        <div>
+          <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 2, color: T.text3, fontWeight: 700, marginBottom: 14 }}>
+            Company
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {[
+              { label: "About Us",       path: "/about"   },
+              { label: "Contact Us",     path: "/contact" },
+              { label: "Privacy Policy", path: "/privacy" },
+            ].map((link) => (
+              <span
+                key={link.label}
+                onClick={() => navigate(link.path)}
+                style={{ fontSize: 13, color: T.text2, cursor: "pointer", transition: "color 0.15s" }}
+                onMouseEnter={(e) => e.currentTarget.style.color = T.accent}
+                onMouseLeave={(e) => e.currentTarget.style.color = T.text2}>
+                → {link.label}
+              </span>
+            ))}
+          </div>
+        </div>
+
         {/* Contact + Suggest */}
         <div>
           <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 2, color: T.text3, fontWeight: 700, marginBottom: 14 }}>
@@ -66,40 +89,24 @@ export default function Footer({ T }) {
           </p>
 
           {/* Email */}
-          <a href="https://mail.google.com/mail/?view=cm&to=darapanenic1@gmail.com&su=Job Suggestion — FlashFeed"
-  target="_blank"
-  rel="noreferrer"
-  style={{
-    display: "flex", alignItems: "center", gap: 10,
-    padding: "10px 16px", borderRadius: 10, marginBottom: 10,
-    background: T.ms2, border: `1px solid ${T.accent}44`,
-    color: T.accent, fontSize: 13, fontWeight: 600,
-    textDecoration: "none", transition: "all 0.15s",
-    fontFamily: "'Satoshi',sans-serif",
-  }}
-  onMouseEnter={(e) => e.currentTarget.style.background = T.bg3}
-  onMouseLeave={(e) => e.currentTarget.style.background = T.ms2}>
-  <Icon path={I_MAIL} size={16} color={T.accent} />
-  Suggest via Email
-</a>
+          <a href="https://mail.google.com/mail/?view=cm&to=darapanenic1@gmail.com&su=Job Suggestion — CarrerClub"
+            target="_blank" rel="noreferrer"
+            style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 16px", borderRadius: 10, marginBottom: 10, background: T.ms2, border: `1px solid ${T.accent}44`, color: T.accent, fontSize: 13, fontWeight: 600, textDecoration: "none", transition: "all 0.15s", fontFamily: "'Satoshi',sans-serif" }}
+            onMouseEnter={(e) => e.currentTarget.style.background = T.bg3}
+            onMouseLeave={(e) => e.currentTarget.style.background = T.ms2}>
+            <Icon path={I_MAIL} size={16} color={T.accent} />
+            Suggest via Email
+          </a>
 
           {/* Telegram */}
           <a href="https://t.me/undefined890"
-  target="_blank"
-  rel="noreferrer"
-  style={{
-    display: "flex", alignItems: "center", gap: 10,
-    padding: "10px 16px", borderRadius: 10,
-    background: T.inBg, border: `1px solid ${T.a3}44`,
-    color: T.a3, fontSize: 13, fontWeight: 600,
-    textDecoration: "none", transition: "all 0.15s",
-    fontFamily: "'Satoshi',sans-serif",
-  }}
-  onMouseEnter={(e) => e.currentTarget.style.background = T.bg3}
-  onMouseLeave={(e) => e.currentTarget.style.background = T.inBg}>
-  <Icon path={I_SEND} size={16} color={T.a3} />
-  Suggest via Telegram
-</a>
+            target="_blank" rel="noreferrer"
+            style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 16px", borderRadius: 10, background: T.inBg, border: `1px solid ${T.a3}44`, color: T.a3, fontSize: 13, fontWeight: 600, textDecoration: "none", transition: "all 0.15s", fontFamily: "'Satoshi',sans-serif" }}
+            onMouseEnter={(e) => e.currentTarget.style.background = T.bg3}
+            onMouseLeave={(e) => e.currentTarget.style.background = T.inBg}>
+            <Icon path={I_SEND} size={16} color={T.a3} />
+            Suggest via Telegram
+          </a>
         </div>
       </div>
 
@@ -111,8 +118,24 @@ export default function Footer({ T }) {
         flexWrap: "wrap", gap: 8,
       }}>
         <span style={{ fontSize: 12, color: T.text3 }}>
-          © {new Date().getFullYear()} FlashFeed Jobs. All rights reserved.
+          © {new Date().getFullYear()} CarrerClub Jobs. All rights reserved.
         </span>
+        <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+          {[
+            { label: "Privacy Policy", path: "/privacy" },
+            { label: "About",          path: "/about"   },
+            { label: "Contact",        path: "/contact" },
+          ].map((link) => (
+            <span
+              key={link.label}
+              onClick={() => navigate(link.path)}
+              style={{ fontSize: 12, color: T.text3, cursor: "pointer", transition: "color 0.15s" }}
+              onMouseEnter={(e) => e.currentTarget.style.color = T.accent}
+              onMouseLeave={(e) => e.currentTarget.style.color = T.text3}>
+              {link.label}
+            </span>
+          ))}
+        </div>
         <span style={{ fontSize: 12, color: T.text3 }}>
           Updated daily · Made with ❤️ for job seekers
         </span>

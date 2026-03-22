@@ -17,6 +17,9 @@ import AlertsView    from "./views/AlertsView";
 import AdminView     from "./views/AdminView";
 import LoginView     from "./views/LoginView";
 import NotFoundView  from "./views/NotFoundView";
+import PrivacyView   from "./views/PrivacyView";
+import AboutView     from "./views/AboutView";
+import ContactView   from "./views/Contactview";
 
 export default function App() {
   const [isDark,      setIsDark]      = useState(true);
@@ -28,12 +31,12 @@ export default function App() {
   const [suggOpen,    setSuggOpen]    = useState(false);
   const suggTimer                     = useRef(null);
 
-  const navigate  = useNavigate();
-  const location  = useLocation();
-  const w         = useWindowWidth();
-  const isMobile  = w < 768;
-  const T         = isDark ? DARK : LIGHT;
-  const isAdmin   = location.pathname.startsWith("/admin");
+  const navigate   = useNavigate();
+  const location   = useLocation();
+  const w          = useWindowWidth();
+  const isMobile   = w < 768;
+  const T          = isDark ? DARK : LIGHT;
+  const isAdmin    = location.pathname.startsWith("/admin");
   const savedCount = jobs.filter((j) => j.saved).length;
 
   const { user, loading: authLoading, logout } = useAuth();
@@ -102,7 +105,7 @@ export default function App() {
   const NAV_COLORS = [T.accent, T.a3, T.a4, T.a5];
 
   const SUGG_LINKS = [
-    { label: "Send Mail", emoji: "✉️", color: T.a2, bg: "rgba(255,100,80,0.10)", brd: "rgba(255,100,80,0.25)", href: "https://mail.google.com/mail/?view=cm&to=darapanenic1@gmail.com&su=Job Suggestion — CareerClub" },
+    { label: "Send Mail", emoji: "✉️", color: T.a2, bg: "rgba(255,100,80,0.10)", brd: "rgba(255,100,80,0.25)", href: "https://mail.google.com/mail/?view=cm&to=darapanenic1@gmail.com&su=Job Suggestion — CarrerClub" },
     { label: "Telegram",  emoji: "✈️", color: T.a3, bg: "rgba(56,189,248,0.10)", brd: "rgba(56,189,248,0.25)", href: "https://t.me/undefined890" },
   ];
 
@@ -133,7 +136,7 @@ export default function App() {
       {!isAdmin && (
         <nav style={{ position: "sticky", top: 0, zIndex: 300, backdropFilter: "blur(20px)", background: T.navBg, borderBottom: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 1.5rem", height: 56, flexShrink: 0 }}>
           <div onClick={() => navigate("/")} style={{ fontFamily: "'Clash Display',sans-serif", fontSize: 20, fontWeight: 700, letterSpacing: -0.5, color: T.text, cursor: "pointer", display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
-            Career<span style={{ color: T.accent }}>Club</span>
+            Carrer<span style={{ color: T.accent }}>Club</span>
             <span style={{ fontSize: 10, fontWeight: 700, background: T.ftBg, color: T.ftFg, padding: "2px 7px", borderRadius: 20 }}>JOBS</span>
           </div>
 
@@ -172,12 +175,12 @@ export default function App() {
                     {SUGG_LINKS.map((s, i) => (
                       <a key={s.label} href={s.href} target="_blank" rel="noreferrer"
                         style={{ display: "flex", alignItems: "center", gap: 12, padding: "13px 14px", borderBottom: i < SUGG_LINKS.length - 1 ? `1px solid ${T.border}` : "none", textDecoration: "none", transition: "background 0.15s", background: "transparent" }}
-                        onMouseEnter={(e) => e.currentTarget.style.background = T.bg3}
-                        onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
+                        onMouseEnter={(e) => { e.currentTarget.style.background = T.bg3; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}>
                         <div style={{ width: 38, height: 38, borderRadius: 10, background: s.bg, border: `1px solid ${s.brd}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>{s.emoji}</div>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ fontSize: 13, fontWeight: 700, color: s.color }}>{s.label}</div>
-                          <div style={{ fontSize: 11, color: T.text3, marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.sub}</div>
+                          <div style={{ fontSize: 11, color: T.text3, marginTop: 2 }}>{s.sub}</div>
                         </div>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.text3} strokeWidth="2" strokeLinecap="round"><path d="M7 17L17 7 M7 7h10v10" /></svg>
                       </a>
@@ -205,11 +208,11 @@ export default function App() {
 
       {/* ── MOBILE DRAWER ── */}
       {isMobile && menuOpen && (
-        <>
+        <div>
           <div onClick={() => setMenuOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 400, background: "rgba(0,0,0,0.7)", backdropFilter: "blur(6px)" }} />
           <div style={{ position: "fixed", top: 0, right: 0, zIndex: 500, width: 280, height: "100vh", background: "rgba(10,14,26,0.97)", backdropFilter: "blur(20px)", borderLeft: "1px solid rgba(100,130,255,0.18)", display: "flex", flexDirection: "column", animation: "slideIn 0.25s ease" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "1rem 1.25rem", borderBottom: "1px solid rgba(100,130,255,0.12)", background: "rgba(124,109,255,0.08)" }}>
-              <div style={{ fontFamily: "'Clash Display',sans-serif", fontSize: 18, fontWeight: 700, color: "#e8eeff" }}>Career<span style={{ color: T.accent }}>Club</span></div>
+              <div style={{ fontFamily: "'Clash Display',sans-serif", fontSize: 18, fontWeight: 700, color: "#e8eeff" }}>Carrer<span style={{ color: T.accent }}>Club</span></div>
               <button onClick={() => setMenuOpen(false)} style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <Icon path={I.close} size={16} color="#8896b3" />
               </button>
@@ -238,8 +241,25 @@ export default function App() {
                 <a key={s.label} href={s.href} target="_blank" rel="noreferrer"
                   style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 12px", marginBottom: 8, borderRadius: 10, background: s.bg, border: `1px solid ${s.brd}`, color: s.color, textDecoration: "none", fontFamily: "'Satoshi',sans-serif", fontSize: 14 }}>
                   <div style={{ width: 32, height: 32, borderRadius: 8, background: s.bg, border: `1px solid ${s.brd}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>{s.emoji}</div>
-                  <div><div style={{ fontWeight: 700 }}>{s.label}</div><div style={{ fontSize: 11, opacity: 0.7, marginTop: 1 }}>{s.sub}</div></div>
+                  <div>
+                    <div style={{ fontWeight: 700 }}>{s.label}</div>
+                    <div style={{ fontSize: 11, opacity: 0.7, marginTop: 1 }}>{s.sub}</div>
+                  </div>
                 </a>
+              ))}
+              <div style={{ height: 1, background: "rgba(100,130,255,0.12)", margin: "1rem 0" }} />
+              <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: 2, color: "#3d4f6e", padding: "0 0.5rem", marginBottom: "0.5rem", fontWeight: 600 }}>Info</div>
+              {[
+                { label: "About Us",       path: "/about"   },
+                { label: "Contact Us",     path: "/contact" },
+                { label: "Privacy Policy", path: "/privacy" },
+              ].map((n) => (
+                <button key={n.path} onClick={() => { navigate(n.path); setMenuOpen(false); }}
+                  style={{ width: "100%", display: "flex", alignItems: "center", gap: 12, padding: "10px 12px", marginBottom: 4, fontSize: 14, cursor: "pointer", fontFamily: "'Satoshi',sans-serif", border: "none", textAlign: "left", background: "transparent", color: "#8896b3", borderRadius: 10, transition: "all 0.15s" }}
+                  onMouseEnter={(e) => { e.currentTarget.style.color = T.accent; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.color = "#8896b3"; }}>
+                  → {n.label}
+                </button>
               ))}
             </div>
             <div style={{ padding: "1rem", borderTop: "1px solid rgba(100,130,255,0.12)" }}>
@@ -248,7 +268,7 @@ export default function App() {
               </button>
             </div>
           </div>
-        </>
+        </div>
       )}
 
       {/* ── LOADING BAR ── */}
@@ -261,11 +281,14 @@ export default function App() {
       {/* ── ROUTES ── */}
       <main style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
         <Routes>
-          <Route path="/"                    element={<HomeView   jobs={jobs} T={T} isMobile={isMobile} setSelJob={setSelJob} onSave={handleSave} />} />
-          <Route path="/browse"              element={<BrowseView jobs={jobs} T={T} isMobile={isMobile} setSelJob={setSelJob} onSave={handleSave} />} />
-          <Route path="/browse/:catId"       element={<BrowseView jobs={jobs} T={T} isMobile={isMobile} setSelJob={setSelJob} onSave={handleSave} />} />
-          <Route path="/saved"               element={<SavedView  jobs={jobs} T={T} isMobile={isMobile} setSelJob={setSelJob} onSave={handleSave} />} />
-          <Route path="/alerts"              element={<AlertsView jobs={jobs} T={T} isMobile={isMobile} />} />
+          <Route path="/"                    element={<HomeView    jobs={jobs} T={T} isMobile={isMobile} setSelJob={setSelJob} onSave={handleSave} />} />
+          <Route path="/browse"              element={<BrowseView  jobs={jobs} T={T} isMobile={isMobile} setSelJob={setSelJob} onSave={handleSave} />} />
+          <Route path="/browse/:catId"       element={<BrowseView  jobs={jobs} T={T} isMobile={isMobile} setSelJob={setSelJob} onSave={handleSave} />} />
+          <Route path="/saved"               element={<SavedView   jobs={jobs} T={T} isMobile={isMobile} setSelJob={setSelJob} onSave={handleSave} />} />
+          <Route path="/alerts"              element={<AlertsView  jobs={jobs} T={T} isMobile={isMobile} />} />
+          <Route path="/about"               element={<AboutView   T={T} isMobile={isMobile} />} />
+          <Route path="/contact"             element={<ContactView T={T} isMobile={isMobile} />} />
+          <Route path="/privacy"             element={<PrivacyView T={T} isMobile={isMobile} />} />
           <Route path="/admin/flashfeed2025" element={
             user
               ? <AdminView
@@ -284,7 +307,6 @@ export default function App() {
                 />
               : <LoginView T={T} />
           } />
-          {/* 404 — catches all unknown URLs */}
           <Route path="*" element={<NotFoundView T={T} />} />
         </Routes>
       </main>
