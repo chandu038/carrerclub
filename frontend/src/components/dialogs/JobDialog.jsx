@@ -6,6 +6,18 @@ import { isNew, BADGE_STYLES, BATCH_STYLE } from "../shared/JobCard";
 
 const SITE_URL = "https://carrerclub.in";
 
+// Generate a readable slug from title + company
+function makeSlug(title, company) {
+  return [title, company]
+    .filter(Boolean)
+    .join("-")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .slice(0, 60);
+}
+
 function Dialog({ children, onClose, T, isMobile }) {
   useEffect(() => {
     const handler = (e) => { if (e.key === "Escape") onClose(); };
@@ -37,10 +49,20 @@ function isExpired(dateStr) {
 function ShareSheet({ job, T, isMobile, onClose }) {
   const [copied, setCopied] = useState(false);
 
-  const shareUrl = `${SITE_URL}/browse?job=${job.id}`;
-  const shareMsg = `${job.title}${job.company ? ` at ${job.company}` : ""}${job.location ? ` — ${job.location}` : ""}\n\n🔗 ${shareUrl}`;
-  const encMsg   = encodeURIComponent(shareMsg);
-  const encUrl   = encodeURIComponent(shareUrl);
+  // Clean slug-only URL — no Firebase ID
+  const slug     = makeSlug(job.title, job.company);
+  const shareUrl = `${SITE_URL}/browse?job=${slug}`;
+  const cleanLoc = job.location ? job.location.replace(/_/g, " ") : "";
+  const shareMsg = [
+    `🔔 ${job.title}${job.company ? ` at ${job.company}` : ""}`,
+    cleanLoc ? `📍 ${cleanLoc}` : null,
+    job.cat !== "govt" && job.salary ? `💰 ${cleanSalary(job.salary)}` : null,
+    `\n🔗 ${shareUrl}`,
+    `\nvia CarrerClub`,
+  ].filter(Boolean).join("\n");
+
+  const encMsg = encodeURIComponent(shareMsg);
+  const encUrl = encodeURIComponent(shareUrl);
 
   const copyLink = () => {
     navigator.clipboard.writeText(shareUrl).then(() => {
@@ -64,8 +86,10 @@ function ShareSheet({ job, T, isMobile, onClose }) {
         <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 901, background: T.bg2, borderRadius: "20px 20px 0 0", border: `1px solid ${T.border2}`, paddingBottom: "env(safe-area-inset-bottom,16px)", animation: "slideUp 0.25s cubic-bezier(0.34,1.4,0.64,1)" }}>
           <style>{`@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}`}</style>
           <div style={{ width: 40, height: 4, background: T.border2, borderRadius: 4, margin: "12px auto 0" }} />
-          <div style={{ padding: "12px 16px 4px", fontFamily: "'Clash Display',sans-serif", fontSize: 15, fontWeight: 700, color: T.text }}>Share this job</div>
-          <div style={{ fontSize: 11, color: T.text3, padding: "0 16px 12px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{shareUrl}</div>
+          <div style={{ padding: "12px 16px 2px", fontFamily: "'Clash Display',sans-serif", fontSize: 15, fontWeight: 700, color: T.text }}>Share this job</div>
+          <div style={{ fontSize: 11, color: T.text3, padding: "2px 16px 12px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            {shareUrl}
+          </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 8, padding: "0 16px 16px" }}>
             {OPTIONS.map((s) => (
               <a key={s.label} href={s.href} target="_blank" rel="noreferrer" onClick={onClose}
@@ -119,13 +143,14 @@ function ShareSheet({ job, T, isMobile, onClose }) {
 export default function JobDialog({ job, onClose, onSave, T, isMobile }) {
   const [shareOpen, setShareOpen] = useState(false);
 
-  const tc       = TYPE_COLORS(T)[job.type] || TYPE_COLORS(T)["Full-time"];
-  const cat      = CATS.find((c) => c.id === job.cat);
-  const catColor = cat?.color ? T[cat.color] : T.a3;
-  const _isNew   = isNew(job.posted);
-  const badges   = Array.isArray(job.badges)  ? job.badges  : [];
-  const batches  = Array.isArray(job.batches) ? job.batches : [];
-  const isGovt   = job.cat === "govt";
+  const tc             = TYPE_COLORS(T)[job.type] || TYPE_COLORS(T)["Full-time"];
+  const cat            = CATS.find((c) => c.id === job.cat);
+  const catColor       = cat?.color ? T[cat.color] : T.a3;
+  const _isNew         = isNew(job.posted);
+  const badges         = Array.isArray(job.badges)  ? job.badges  : [];
+  const batches        = Array.isArray(job.batches) ? job.batches : [];
+  const isGovt         = job.cat === "govt";
+  const displayLocation = job.location ? job.location.replace(/_/g, " ") : "";
 
   return (
     <Dialog onClose={onClose} T={T} isMobile={isMobile}>
@@ -139,7 +164,6 @@ export default function JobDialog({ job, onClose, onSave, T, isMobile }) {
         )}
 
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8, marginTop: _isNew ? 28 : 0 }}>
-          {/* Logo + title — takes remaining space, min-width 0 to allow truncation */}
           <div style={{ display: "flex", alignItems: "flex-start", gap: 10, flex: 1, minWidth: 0 }}>
             <div style={{ width: isMobile ? 44 : 54, height: isMobile ? 44 : 54, borderRadius: 12, background: T.bg2, border: `1px solid ${T.border2}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: isMobile ? 22 : 26, flexShrink: 0, overflow: "hidden" }}>
               {job.logo && <img src={job.logo} alt={job.company} style={{ width: "100%", height: "100%", objectFit: "contain", padding: 6 }} onError={(e) => { e.target.style.display = "none"; e.target.nextSibling.style.display = "flex"; }} />}
@@ -149,21 +173,19 @@ export default function JobDialog({ job, onClose, onSave, T, isMobile }) {
               <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 1.4, fontWeight: 700, color: catColor, marginBottom: 3, display: "flex", alignItems: "center", gap: 5 }}>
                 <Icon path={I[cat?.ic || "briefcase"]} size={11} color={catColor} />{cat?.label}
               </div>
-              {/* Title — allow wrapping but not overflow */}
               <div style={{ fontFamily: "'Clash Display',sans-serif", fontSize: isMobile ? 16 : 21, fontWeight: 700, letterSpacing: -0.5, lineHeight: 1.25, color: T.text, wordBreak: "break-word" }}>
                 {job.title}
               </div>
-              {/* Company + location — truncate on overflow */}
-              <div style={{ fontSize: 12, color: T.text2, marginTop: 4, display: "flex", alignItems: "flex-start", gap: 4, overflow: "hidden" }}>
-                <Icon path={I.map} size={11} color={T.text3} style={{ flexShrink: 0, marginTop: 1 }} />
+              <div style={{ fontSize: 12, color: T.text2, marginTop: 4, display: "flex", alignItems: "center", gap: 4, overflow: "hidden" }}>
+                <Icon path={I.map} size={11} color={T.text3} />
                 <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                  {job.company}{job.location ? ` · ${job.location}` : ""}
+                  {job.company}{displayLocation ? ` · ${displayLocation}` : ""}
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Action buttons — fixed width, no shrink */}
+          {/* Action buttons */}
           <div style={{ display: "flex", gap: 5, flexShrink: 0 }}>
             <button onClick={() => onSave(job.id)}
               style={{ width: 32, height: 32, borderRadius: 8, border: `1px solid ${job.saved ? T.accent : T.border2}`, background: job.saved ? T.accent : T.bg3, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -191,7 +213,7 @@ export default function JobDialog({ job, onClose, onSave, T, isMobile }) {
           </div>
         </div>
 
-        {/* Badges row */}
+        {/* Badges */}
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: "0.85rem" }}>
           {!isGovt && <>
             <span style={{ background: tc.bg, color: tc.fg, fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 20 }}>{job.type}</span>
@@ -200,29 +222,11 @@ export default function JobDialog({ job, onClose, onSave, T, isMobile }) {
               <Icon path={I.clock} size={10} color={catColor} />{job.exp}
             </span>
           </>}
-          {isGovt && job.vacancies && (
-            <span style={{ background: "rgba(52,211,153,0.15)", border: "1px solid rgba(52,211,153,0.35)", color: "#34d399", fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 20 }}>
-              🏛️ {job.vacancies} Vacancies
-            </span>
-          )}
-          {isGovt && job.startDate && (
-            <span style={{ background: "rgba(56,189,248,0.12)", border: "1px solid rgba(56,189,248,0.3)", color: "#38bdf8", fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 20 }}>
-              🟢 {formatShortDate(job.startDate)}
-            </span>
-          )}
-          {isGovt && job.lastDate && (
-            <span style={{ background: isExpired(job.lastDate) ? "rgba(255,82,121,0.15)" : "rgba(251,146,60,0.15)", border: `1px solid ${isExpired(job.lastDate) ? "rgba(255,82,121,0.35)" : "rgba(251,146,60,0.35)"}`, color: isExpired(job.lastDate) ? "#ff5279" : "#fb923c", fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 20 }}>
-              {isExpired(job.lastDate) ? "⛔ Expired" : `⏰ ${formatShortDate(job.lastDate)}`}
-            </span>
-          )}
-          {badges.map((id) => {
-            const b = BADGE_STYLES[id];
-            if (!b) return null;
-            return <span key={id} style={{ background: b.bg, border: `1px solid ${b.border}`, fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 20, color: b.color }}>✓ {b.label}</span>;
-          })}
-          {batches.map((yr) => (
-            <span key={yr} style={{ background: BATCH_STYLE.bg, border: `1px solid ${BATCH_STYLE.border}`, fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 20, color: BATCH_STYLE.color }}>🎓 {yr}</span>
-          ))}
+          {isGovt && job.vacancies && <span style={{ background: "rgba(52,211,153,0.15)", border: "1px solid rgba(52,211,153,0.35)", color: "#34d399", fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 20 }}>🏛️ {job.vacancies} Vacancies</span>}
+          {isGovt && job.startDate  && <span style={{ background: "rgba(56,189,248,0.12)", border: "1px solid rgba(56,189,248,0.3)", color: "#38bdf8", fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 20 }}>🟢 {formatShortDate(job.startDate)}</span>}
+          {isGovt && job.lastDate   && <span style={{ background: isExpired(job.lastDate) ? "rgba(255,82,121,0.15)" : "rgba(251,146,60,0.15)", border: `1px solid ${isExpired(job.lastDate) ? "rgba(255,82,121,0.35)" : "rgba(251,146,60,0.35)"}`, color: isExpired(job.lastDate) ? "#ff5279" : "#fb923c", fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 20 }}>{isExpired(job.lastDate) ? "⛔ Expired" : `⏰ ${formatShortDate(job.lastDate)}`}</span>}
+          {badges.map((id) => { const b = BADGE_STYLES[id]; if (!b) return null; return <span key={id} style={{ background: b.bg, border: `1px solid ${b.border}`, fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 20, color: b.color }}>✓ {b.label}</span>; })}
+          {batches.map((yr) => <span key={yr} style={{ background: BATCH_STYLE.bg, border: `1px solid ${BATCH_STYLE.border}`, fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 20, color: BATCH_STYLE.color }}>🎓 {yr}</span>)}
         </div>
       </div>
 
@@ -234,36 +238,16 @@ export default function JobDialog({ job, onClose, onSave, T, isMobile }) {
           <div style={{ background: "rgba(52,211,153,0.06)", border: "1px solid rgba(52,211,153,0.2)", borderRadius: 10, padding: "0.85rem 1rem", margin: "1rem 0 0" }}>
             <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 1.2, color: "#34d399", fontWeight: 700, marginBottom: 10 }}>🏛️ Government Job Info</div>
             <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "1fr 1fr 1fr", gap: 8 }}>
-              {job.vacancies && (
-                <div style={{ background: T.bg3, border: "1px solid rgba(52,211,153,0.2)", borderRadius: 8, padding: "9px 11px" }}>
-                  <div style={{ fontSize: 11, color: T.text2, marginBottom: 3 }}>Vacancies</div>
-                  <div style={{ fontSize: 15, fontWeight: 800, color: "#34d399" }}>{job.vacancies}</div>
-                </div>
-              )}
-              {job.startDate && (
-                <div style={{ background: T.bg3, border: "1px solid rgba(56,189,248,0.2)", borderRadius: 8, padding: "9px 11px" }}>
-                  <div style={{ fontSize: 11, color: T.text2, marginBottom: 3 }}>Start Date</div>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: "#38bdf8" }}>{formatShortDate(job.startDate)}</div>
-                </div>
-              )}
-              {job.lastDate && (
-                <div style={{ background: T.bg3, border: `1px solid ${isExpired(job.lastDate) ? "rgba(255,82,121,0.3)" : "rgba(251,146,60,0.3)"}`, borderRadius: 8, padding: "9px 11px" }}>
-                  <div style={{ fontSize: 11, color: T.text2, marginBottom: 3 }}>Last Date</div>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: isExpired(job.lastDate) ? "#ff5279" : "#fb923c" }}>{formatShortDate(job.lastDate)}</div>
-                  <div style={{ fontSize: 10, color: isExpired(job.lastDate) ? "#ff5279" : T.text3 }}>{isExpired(job.lastDate) ? "⛔ Passed" : "Don't miss!"}</div>
-                </div>
-              )}
+              {job.vacancies && <div style={{ background: T.bg3, border: "1px solid rgba(52,211,153,0.2)", borderRadius: 8, padding: "9px 11px" }}><div style={{ fontSize: 11, color: T.text2, marginBottom: 3 }}>Vacancies</div><div style={{ fontSize: 15, fontWeight: 800, color: "#34d399" }}>{job.vacancies}</div></div>}
+              {job.startDate  && <div style={{ background: T.bg3, border: "1px solid rgba(56,189,248,0.2)", borderRadius: 8, padding: "9px 11px" }}><div style={{ fontSize: 11, color: T.text2, marginBottom: 3 }}>Start Date</div><div style={{ fontSize: 12, fontWeight: 700, color: "#38bdf8" }}>{formatShortDate(job.startDate)}</div></div>}
+              {job.lastDate   && <div style={{ background: T.bg3, border: `1px solid ${isExpired(job.lastDate) ? "rgba(255,82,121,0.3)" : "rgba(251,146,60,0.3)"}`, borderRadius: 8, padding: "9px 11px" }}><div style={{ fontSize: 11, color: T.text2, marginBottom: 3 }}>Last Date</div><div style={{ fontSize: 12, fontWeight: 700, color: isExpired(job.lastDate) ? "#ff5279" : "#fb923c" }}>{formatShortDate(job.lastDate)}</div><div style={{ fontSize: 10, color: isExpired(job.lastDate) ? "#ff5279" : T.text3 }}>{isExpired(job.lastDate) ? "⛔ Passed" : "Don't miss!"}</div></div>}
             </div>
             {job.notificationLink && (
               <a href={job.notificationLink} target="_blank" rel="noreferrer"
                 style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10, padding: "9px 14px", borderRadius: 8, background: "rgba(52,211,153,0.1)", border: "1px solid rgba(52,211,153,0.3)", color: "#34d399", textDecoration: "none", fontSize: 13, fontWeight: 700 }}
                 onMouseEnter={(e) => e.currentTarget.style.background = "rgba(52,211,153,0.18)"}
                 onMouseLeave={(e) => e.currentTarget.style.background = "rgba(52,211,153,0.1)"}>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#34d399" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                  <polyline points="14 2 14 8 20 8"/>
-                  <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
-                </svg>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#34d399" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                 View Official Notification / PDF
                 <svg style={{ marginLeft: "auto" }} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#34d399" strokeWidth="2" strokeLinecap="round"><path d="M7 17L17 7M7 7h10v10" /></svg>
               </a>
@@ -278,9 +262,7 @@ export default function JobDialog({ job, onClose, onSave, T, isMobile }) {
               <Icon path={I.tag} size={12} color={T.a3} />Skills & tags
             </div>
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-              {job.tags.map((t) => (
-                <span key={t} style={{ background: T.bg3, border: `1px solid ${T.border2}`, padding: "4px 12px", borderRadius: 20, fontSize: 12, color: T.text }}>{t}</span>
-              ))}
+              {job.tags.map((t) => <span key={t} style={{ background: T.bg3, border: `1px solid ${T.border2}`, padding: "4px 12px", borderRadius: 20, fontSize: 12, color: T.text }}>{t}</span>)}
             </div>
           </div>
         )}
@@ -292,25 +274,13 @@ export default function JobDialog({ job, onClose, onSave, T, isMobile }) {
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
             {(isGovt
-              ? [
-                  ["Location", I.map,   job.location,             false],
-                  ["Posted",   I.clock, formatPosted(job.posted), false],
-                  ["Org",      I.govt,  job.company,              false],
-                ]
-              : [
-                  ["Location",   I.map,       job.location,             false],
-                  ["Salary",     I.money,     cleanSalary(job.salary),  true ],
-                  ["Type",       I.briefcase, job.type,                 false],
-                  ["Experience", I.clock,     job.exp,                  false],
-                  ["Company",    I.govt,      job.company,              false],
-                  ["Posted",     I.clock,     formatPosted(job.posted), false],
-                ]
+              ? [["Location", I.map, displayLocation, false], ["Posted", I.clock, formatPosted(job.posted), false], ["Org", I.govt, job.company, false]]
+              : [["Location", I.map, displayLocation, false], ["Salary", I.money, cleanSalary(job.salary), true], ["Type", I.briefcase, job.type, false], ["Experience", I.clock, job.exp, false], ["Company", I.govt, job.company, false], ["Posted", I.clock, formatPosted(job.posted), false]]
             ).map(([label, icon, value, accent]) => !value ? null : (
               <div key={label} style={{ background: T.bg3, border: `1px solid ${T.border2}`, borderRadius: 8, padding: "9px 11px", minWidth: 0 }}>
                 <div style={{ fontSize: 11, color: T.text2, marginBottom: 3, display: "flex", alignItems: "center", gap: 4 }}>
                   <Icon path={icon} size={11} color={T.text2} />{label}
                 </div>
-                {/* Value with overflow truncation */}
                 <div style={{ fontSize: 13, fontWeight: 700, color: accent ? T.a3 : T.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{value}</div>
               </div>
             ))}

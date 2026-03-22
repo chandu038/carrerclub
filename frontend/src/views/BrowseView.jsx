@@ -5,6 +5,18 @@ import JobCard from "../components/shared/JobCard";
 import { I, CATS } from "../constants";
 import { useWindowWidth } from "../hooks/useWindowWidth";
 
+// Same slug function as JobDialog
+function makeSlug(title, company) {
+  return [title, company]
+    .filter(Boolean)
+    .join("-")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .slice(0, 60);
+}
+
 export default function BrowseView({ jobs, T, isMobile, setSelJob, onSave }) {
   const { catId }  = useParams();
   const navigate   = useNavigate();
@@ -15,27 +27,29 @@ export default function BrowseView({ jobs, T, isMobile, setSelJob, onSave }) {
   const [typeFilter, setTypeFilter] = useState("all");
   const [search,     setSearch]     = useState("");
 
-  // Auto-open job from ?job=ID in URL
+  // Auto-open job from ?job=SLUG or ?job=ID in URL
   useEffect(() => {
+    if (jobs.length === 0) return;
     const params = new URLSearchParams(location.search);
-    const jobId  = params.get("job");
-    if (jobId && jobs.length > 0) {
-      const found = jobs.find((j) => j.id === jobId);
-      if (found) {
-        setSelJob(found);
-        // Clean the URL without reload
-        navigate(location.pathname, { replace: true });
-      }
+    const jobParam = params.get("job");
+    if (!jobParam) return;
+
+    // Try match by ID first, then by slug
+    const found =
+      jobs.find((j) => j.id === jobParam) ||
+      jobs.find((j) => makeSlug(j.title, j.company) === jobParam);
+
+    if (found) {
+      setSelJob(found);
+      // Clean URL
+      navigate(location.pathname, { replace: true });
     }
   }, [location.search, jobs]);
 
   // Sync category from URL param
   useEffect(() => {
-    if (catId && CATS.find((c) => c.id === catId)) {
-      setCat(catId);
-    } else {
-      setCat("all");
-    }
+    if (catId && CATS.find((c) => c.id === catId)) setCat(catId);
+    else setCat("all");
   }, [catId]);
 
   const handleCatChange = (id) => {
