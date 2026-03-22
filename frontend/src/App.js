@@ -29,6 +29,7 @@ export default function App() {
   const [toast,       setToast]       = useState({ on: false, msg: "" });
   const [menuOpen,    setMenuOpen]    = useState(false);
   const [suggOpen,    setSuggOpen]    = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
   const suggTimer                     = useRef(null);
 
   const navigate   = useNavigate();
@@ -47,6 +48,15 @@ export default function App() {
       .catch(() => showToast("Failed to load jobs. Check connection."))
       .finally(() => setJobsLoading(false));
   }, []);
+
+  // ── Scroll to top button visibility ──────────────────────────────────────
+  useEffect(() => {
+    const handleScroll = () => setShowScrollTop(window.scrollY > 300);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
   const showToast = (msg) => {
     setToast({ on: true, msg });
@@ -323,9 +333,42 @@ export default function App() {
         />
       )}
 
+      {/* ── TOAST ── */}
       <div style={{ position: "fixed", bottom: 22, right: 22, zIndex: 999, background: `linear-gradient(135deg,${T.a3},${T.a4})`, color: "#fff", padding: "10px 18px", borderRadius: 10, fontSize: 13, fontWeight: 700, fontFamily: "'Clash Display',sans-serif", transform: toast.on ? "translateY(0)" : "translateY(60px)", opacity: toast.on ? 1 : 0, transition: "all 0.28s ease", pointerEvents: "none", display: "flex", alignItems: "center", gap: 8, maxWidth: 320 }}>
         <Icon path={I.check} size={16} color="#fff" />{toast.msg}
       </div>
+
+      {/* ── SCROLL TO TOP BUTTON ── */}
+      {!isAdmin && (
+        <button
+          onClick={scrollToTop}
+          style={{
+            position: "fixed",
+            bottom: 80,
+            right: 22,
+            zIndex: 998,
+            width: 44,
+            height: 44,
+            borderRadius: 12,
+            background: `linear-gradient(135deg,${T.accent},${T.a3})`,
+            border: "none",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
+            transform: showScrollTop ? "translateY(0) scale(1)" : "translateY(80px) scale(0.8)",
+            opacity: showScrollTop ? 1 : 0,
+            transition: "all 0.3s cubic-bezier(0.34,1.4,0.64,1)",
+            pointerEvents: showScrollTop ? "auto" : "none",
+          }}
+          title="Back to top"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M18 15l-6-6-6 6" />
+          </svg>
+        </button>
+      )}
     </div>
   );
 }
