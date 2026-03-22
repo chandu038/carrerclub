@@ -48,10 +48,9 @@ export const ADMIN_TABS = [
   { id:"manage",    label:"Manage",    ic:"list" },
   { id:"settings",  label:"Settings",  ic:"settings" },
 ];
+
 export function formatPosted(posted) {
   if (!posted) return "";
- 
- 
   if (
     posted === "Today"     ||
     posted === "Yesterday" ||
@@ -59,17 +58,13 @@ export function formatPosted(posted) {
     /^\d+ weeks? ago$/i.test(posted) ||
     /^\d+ months? ago$/i.test(posted)
   ) return posted;
- 
-  // Try to parse as a date
   const date = new Date(posted);
-  if (isNaN(date.getTime())) return posted; // unparseable → show raw string
- 
+  if (isNaN(date.getTime())) return posted;
   const now      = new Date();
   const diffMs   = now.getTime() - date.getTime();
   const diffMins = Math.floor(diffMs / (1000 * 60));
   const diffHrs  = Math.floor(diffMs / (1000 * 60 * 60));
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
- 
   if (diffMins < 1)   return "Just now";
   if (diffHrs  < 1)   return `${diffMins} min ago`;
   if (diffHrs  < 24)  return "Today";
@@ -80,10 +75,19 @@ export function formatPosted(posted) {
   if (diffDays < 60)  return "1 month ago";
   return `${Math.floor(diffDays / 30)} months ago`;
 }
+
 export function cleanSalary(salary) {
   if (!salary) return "";
-
-  // Remove any existing currency symbols ($, ₹, €, £)
   const cleaned = salary.replace(/[₹$€£]/g, "").trim();
   return `₹${cleaned}`;
+}
+
+// Format a date string like "2025-06-15" → "15 Jun 2025"
+export function formatShortDate(dateStr) {
+  if (!dateStr) return null;
+  try {
+    return new Date(dateStr).toLocaleDateString("en-IN", {
+      day: "numeric", month: "short", year: "numeric"
+    });
+  } catch { return dateStr; }
 }

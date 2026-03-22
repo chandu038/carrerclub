@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Icon from "./Icon";
-import { I, CATS, formatPosted, cleanSalary } from "../../constants";
+import { I, CATS, formatPosted, cleanSalary, formatShortDate } from "../../constants";
 import { TYPE_COLORS } from "../../themes";
 
 export function isNew(posted) {
@@ -21,6 +21,11 @@ export const BADGE_STYLES = {
 
 export const BATCH_STYLE = { color: "#c084fc", bg: "rgba(192,132,252,0.12)", border: "rgba(192,132,252,0.35)" };
 
+function isExpired(dateStr) {
+  if (!dateStr) return false;
+  return new Date(dateStr) < new Date();
+}
+
 export default function JobCard({ job, onClick, onSave, T }) {
   const [hovered, setHovered] = useState(false);
   const tc       = TYPE_COLORS(T)[job.type] || TYPE_COLORS(T)["Full-time"];
@@ -29,6 +34,7 @@ export default function JobCard({ job, onClick, onSave, T }) {
   const _isNew   = isNew(job.posted);
   const badges   = Array.isArray(job.badges)  ? job.badges  : [];
   const batches  = Array.isArray(job.batches) ? job.batches : [];
+  const isGovt   = job.cat === "govt";
 
   return (
     <div
@@ -36,7 +42,7 @@ export default function JobCard({ job, onClick, onSave, T }) {
       onMouseLeave={() => setHovered(false)}
       style={{
         background: hovered ? T.bg4 : T.cardBg,
-        border: `1px solid ${hovered ? T.border2 : T.border}`,
+        border: `1px solid ${hovered ? (isGovt ? T.a6 : T.border2) : T.border}`,
         borderRadius: 12, padding: "1rem 1.1rem",
         cursor: "pointer", transition: "all 0.18s ease",
         transform: hovered ? "translateY(-2px)" : "none",
@@ -56,8 +62,9 @@ export default function JobCard({ job, onClick, onSave, T }) {
       </button>
 
       <div onClick={() => onClick(job)}>
+        {/* Logo + title */}
         <div style={{ display: "flex", alignItems: "flex-start", gap: 10, paddingRight: 34 }}>
-          <div style={{ width: 42, height: 42, borderRadius: 9, background: T.bg3, border: `1px solid ${T.border2}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0, overflow: "hidden" }}>
+          <div style={{ width: 42, height: 42, borderRadius: 9, background: isGovt ? "rgba(52,211,153,0.08)" : T.bg3, border: `1px solid ${isGovt ? "rgba(52,211,153,0.25)" : T.border2}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0, overflow: "hidden" }}>
             {job.logo && <img src={job.logo} alt={job.company} style={{ width: "100%", height: "100%", objectFit: "contain", padding: 4 }} onError={(e) => { e.target.style.display = "none"; e.target.nextSibling.style.display = "flex"; }} />}
             <span style={{ display: job.logo ? "none" : "flex", alignItems: "center", justifyContent: "center", width: "100%", height: "100%" }}>{job.emoji}</span>
           </div>
@@ -67,37 +74,71 @@ export default function JobCard({ job, onClick, onSave, T }) {
           </div>
         </div>
 
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: T.a3 }}>{cleanSalary(job.salary)}</div>
-          <div style={{ fontSize: 11, color: T.text3 }}>{formatPosted(job.posted)}</div>
-        </div>
+        {/* ── GOVT CARD: show vacancies + dates ── */}
+        {isGovt ? (
+          <>
+            <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 8 }}>
+              <Icon path={I.map} size={12} color={T.text3} />
+              <span style={{ fontSize: 12, color: T.text2 }}>{job.location}</span>
+            </div>
+            {/* Govt info pills */}
+            <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginTop: 8 }}>
+              {job.vacancies && (
+                <span style={{ background: "rgba(52,211,153,0.12)", border: "1px solid rgba(52,211,153,0.3)", color: "#34d399", fontSize: 11, fontWeight: 700, padding: "3px 9px", borderRadius: 20 }}>
+                  🏛️ {job.vacancies} Posts
+                </span>
+              )}
+              {job.startDate && (
+                <span style={{ background: "rgba(56,189,248,0.1)", border: "1px solid rgba(56,189,248,0.3)", color: "#38bdf8", fontSize: 11, fontWeight: 600, padding: "3px 9px", borderRadius: 20 }}>
+                  🟢 Start: {formatShortDate(job.startDate)}
+                </span>
+              )}
+              {job.lastDate && (
+                <span style={{
+                  background: isExpired(job.lastDate) ? "rgba(255,82,121,0.12)" : "rgba(251,146,60,0.12)",
+                  border: `1px solid ${isExpired(job.lastDate) ? "rgba(255,82,121,0.3)" : "rgba(251,146,60,0.3)"}`,
+                  color: isExpired(job.lastDate) ? "#ff5279" : "#fb923c",
+                  fontSize: 11, fontWeight: 600, padding: "3px 9px", borderRadius: 20
+                }}>
+                  {isExpired(job.lastDate) ? "⛔ Expired" : `⏰ End: ${formatShortDate(job.lastDate)}`}
+                </span>
+              )}
+            </div>
+          </>
+        ) : (
+          /* ── NORMAL CARD ── */
+          <>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: T.a3 }}>{cleanSalary(job.salary)}</div>
+              <div style={{ fontSize: 11, color: T.text3 }}>{formatPosted(job.posted)}</div>
+            </div>
 
-        <div style={{ display: "flex", gap: 8, marginTop: 4, alignItems: "center" }}>
-          <Icon path={I.map} size={12} color={T.text3} />
-          <span style={{ fontSize: 12, color: T.text2 }}>{job.location}</span>
-          <span style={{ color: T.text3 }}>·</span>
-          <span style={{ fontSize: 12, color: T.text2 }}>{job.exp}</span>
-        </div>
+            <div style={{ display: "flex", gap: 8, marginTop: 4, alignItems: "center" }}>
+              <Icon path={I.map} size={12} color={T.text3} />
+              <span style={{ fontSize: 12, color: T.text2 }}>{job.location}</span>
+              <span style={{ color: T.text3 }}>·</span>
+              <span style={{ fontSize: 12, color: T.text2 }}>{job.exp}</span>
+            </div>
 
-        {/* Tags — use index to avoid duplicate key warning */}
-        <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginTop: 8 }}>
-          {job.tags.slice(0, 3).map((tag, i) => (
-            <span key={`tag-${i}`} style={{ background: T.bg3, border: `1px solid ${T.border2}`, padding: "2px 8px", borderRadius: 20, fontSize: 11, color: T.text2 }}>{tag}</span>
-          ))}
-        </div>
+            <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginTop: 8 }}>
+              {job.tags?.slice(0, 3).map((tag, i) => (
+                <span key={`tag-${i}`} style={{ background: T.bg3, border: `1px solid ${T.border2}`, padding: "2px 8px", borderRadius: 20, fontSize: 11, color: T.text2 }}>{tag}</span>
+              ))}
+            </div>
 
-        {/* Eligible + Batch badges */}
-        {(badges.length > 0 || batches.length > 0) && (
-          <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginTop: 6 }}>
-            {badges.map((id, i) => {
-              const b = BADGE_STYLES[id];
-              if (!b) return null;
-              return <span key={`badge-${i}`} style={{ background: b.bg, border: `1px solid ${b.border}`, padding: "2px 8px", borderRadius: 20, fontSize: 11, color: b.color, fontWeight: 700 }}>✓ {b.label}</span>;
-            })}
-            {batches.map((yr, i) => (
-              <span key={`batch-${i}`} style={{ background: BATCH_STYLE.bg, border: `1px solid ${BATCH_STYLE.border}`, padding: "2px 8px", borderRadius: 20, fontSize: 11, color: BATCH_STYLE.color, fontWeight: 700 }}>🎓 {yr}</span>
-            ))}
-          </div>
+            {(badges.length > 0 || batches.length > 0) && (
+              <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginTop: 6 }}>
+                {badges.map((id, i) => {
+                  const b = BADGE_STYLES[id];
+                  if (!b) return null;
+                  return <span key={`badge-${i}`} style={{ background: b.bg, border: `1px solid ${b.border}`, padding: "2px 8px", borderRadius: 20, fontSize: 11, color: b.color, fontWeight: 700 }}>✓ {b.label}</span>;
+                })}
+                {batches.map((yr, i) => (
+                  <span key={`batch-${i}`} style={{ background: BATCH_STYLE.bg, border: `1px solid ${BATCH_STYLE.border}`, padding: "2px 8px", borderRadius: 20, fontSize: 11, color: BATCH_STYLE.color, fontWeight: 700 }}>🎓 {yr}</span>
+                ))}
+              </div>
+            )}
+          </>
         )}
 
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 8, paddingTop: 8, borderTop: `1px solid ${T.border}` }}>
@@ -105,7 +146,12 @@ export default function JobCard({ job, onClick, onSave, T }) {
             <Icon path={I[cat?.ic || "briefcase"]} size={11} color={catColor} />
             <span style={{ fontSize: 11, color: catColor, fontWeight: 600 }}>{cat?.label}</span>
           </div>
-          <span style={{ background: tc.bg, color: tc.fg, fontSize: 11, fontWeight: 700, padding: "2px 9px", borderRadius: 20 }}>{job.type}</span>
+          {!isGovt && (
+            <span style={{ background: tc.bg, color: tc.fg, fontSize: 11, fontWeight: 700, padding: "2px 9px", borderRadius: 20 }}>{job.type}</span>
+          )}
+          {isGovt && (
+            <span style={{ background: "rgba(52,211,153,0.12)", color: "#34d399", fontSize: 11, fontWeight: 700, padding: "2px 9px", borderRadius: 20 }}>Govt</span>
+          )}
         </div>
       </div>
     </div>

@@ -27,11 +27,11 @@ const BADGE_OPTIONS = [
   { id: "walkin",   label: "Walk-in",              color: "#facc15", bg: "rgba(250,204,21,0.12)",  border: "rgba(250,204,21,0.35)"  },
 ];
 
-const currentYear = new Date().getFullYear();
+const currentYear  = new Date().getFullYear();
 const PRESET_YEARS = Array.from({ length: 6 }, (_, i) => currentYear - 1 + i);
-const BATCH_COLOR = "#c084fc";
-const BATCH_BG    = "rgba(192,132,252,0.12)";
-const BATCH_BRD   = "rgba(192,132,252,0.35)";
+const BATCH_COLOR  = "#c084fc";
+const BATCH_BG     = "rgba(192,132,252,0.12)";
+const BATCH_BRD    = "rgba(192,132,252,0.35)";
 
 function BadgePicker({ value = [], onChange, T }) {
   const toggle = (id) => onChange(value.includes(id) ? value.filter((v) => v !== id) : [...value, id]);
@@ -52,22 +52,15 @@ function BadgePicker({ value = [], onChange, T }) {
 
 function BatchPicker({ value = [], onChange, T, IS }) {
   const [customInput, setCustomInput] = useState("");
-
-  const toggle = (yr) => onChange(value.includes(yr) ? value.filter((v) => v !== yr) : [...value, yr]);
-
+  const toggle    = (yr) => onChange(value.includes(yr) ? value.filter((v) => v !== yr) : [...value, yr]);
   const addCustom = () => {
     const yr = parseInt(customInput.trim(), 10);
-    if (!isNaN(yr) && yr > 2000 && yr < 2100 && !value.includes(yr)) {
-      onChange([...value, yr]);
-    }
+    if (!isNaN(yr) && yr > 2000 && yr < 2100 && !value.includes(yr)) onChange([...value, yr]);
     setCustomInput("");
   };
-
   const handleKey = (e) => { if (e.key === "Enter") { e.preventDefault(); addCustom(); } };
-
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-      {/* Preset year buttons */}
       <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
         {PRESET_YEARS.map((yr) => {
           const active = value.includes(yr);
@@ -79,38 +72,80 @@ function BatchPicker({ value = [], onChange, T, IS }) {
           );
         })}
       </div>
-
-      {/* Manual entry */}
       <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-        <input
-          style={{ ...IS, flex: 1, fontSize: 12 }}
-          value={customInput}
-          onChange={(e) => setCustomInput(e.target.value)}
-          onKeyDown={handleKey}
-          placeholder="Enter any year e.g. 2027, 2028..."
-          type="number"
-          min="2000" max="2100"
-        />
-        <button type="button" onClick={addCustom}
-          style={{ padding: "7px 14px", borderRadius: 7, background: BATCH_BG, border: `1px solid ${BATCH_BRD}`, color: BATCH_COLOR, fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "'Satoshi',sans-serif", whiteSpace: "nowrap" }}>
-          + Add
-        </button>
+        <input style={{ ...IS, flex: 1, fontSize: 12 }} value={customInput} onChange={(e) => setCustomInput(e.target.value)} onKeyDown={handleKey} placeholder="Enter any year e.g. 2027, 2028..." type="number" min="2000" max="2100" />
+        <button type="button" onClick={addCustom} style={{ padding: "7px 14px", borderRadius: 7, background: BATCH_BG, border: `1px solid ${BATCH_BRD}`, color: BATCH_COLOR, fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "'Satoshi',sans-serif", whiteSpace: "nowrap" }}>+ Add</button>
       </div>
-
-      {/* Selected years as removable pills */}
       {value.length > 0 && (
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
           {value.map((yr, i) => (
             <span key={i} style={{ display: "flex", alignItems: "center", gap: 5, background: BATCH_BG, border: `1px solid ${BATCH_BRD}`, padding: "3px 10px", borderRadius: 20, fontSize: 12, color: BATCH_COLOR, fontWeight: 700 }}>
               🎓 {yr}
-              <button type="button" onClick={() => onChange(value.filter((v) => v !== yr))}
-                style={{ background: "none", border: "none", cursor: "pointer", color: BATCH_COLOR, fontSize: 14, lineHeight: 1, padding: 0, display: "flex", alignItems: "center" }}>
-                ×
-              </button>
+              <button type="button" onClick={() => onChange(value.filter((v) => v !== yr))} style={{ background: "none", border: "none", cursor: "pointer", color: BATCH_COLOR, fontSize: 14, lineHeight: 1, padding: 0, display: "flex", alignItems: "center" }}>×</button>
             </span>
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+// ── Govt fields — shown only when cat === "govt" ───────────────────────────────
+function GovtFields({ data, onChange, IS, isMobile }) {
+  return (
+    <div style={{ background: "rgba(52,211,153,0.06)", border: "1px solid rgba(52,211,153,0.22)", borderRadius: 10, padding: "1rem", marginBottom: 10 }}>
+      <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 1.2, color: "#34d399", fontWeight: 700, marginBottom: 10, display: "flex", alignItems: "center", gap: 6 }}>
+        🏛️ Government Job Details
+      </div>
+
+      {/* Row 1: vacancies + startDate + lastDate */}
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10, marginBottom: 10 }}>
+        <Field label="Total Vacancies">
+          <input
+            style={IS} type="number" min="0"
+            value={data.vacancies || ""}
+            onChange={(e) => onChange("vacancies", e.target.value)}
+            placeholder="e.g. 1200"
+          />
+        </Field>
+        <Field label="Start Date (Application Opens)">
+          <input
+            style={IS} type="date"
+            value={data.startDate || ""}
+            onChange={(e) => onChange("startDate", e.target.value)}
+          />
+        </Field>
+        <Field label="Last Date to Apply">
+          <input
+            style={IS} type="date"
+            value={data.lastDate || ""}
+            onChange={(e) => onChange("lastDate", e.target.value)}
+          />
+        </Field>
+      </div>
+
+      {/* Row 2: notification link */}
+      <Field label="Official Notification Link (PDF / Page)">
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{ width: 34, height: 34, borderRadius: 8, background: "rgba(52,211,153,0.1)", border: "1px solid rgba(52,211,153,0.25)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#34d399" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+          </div>
+          <input
+            style={{ ...IS, flex: 1 }}
+            value={data.notificationLink || ""}
+            onChange={(e) => onChange("notificationLink", e.target.value)}
+            placeholder="https://upsc.gov.in/notification.pdf or page URL"
+          />
+        </div>
+        <div style={{ fontSize: 11, color: "#34d399", opacity: 0.7, marginTop: 4 }}>
+          Paste the official notification PDF or recruitment page — shown as a button in the job dialog.
+        </div>
+      </Field>
     </div>
   );
 }
@@ -137,6 +172,8 @@ export default function AdminView({
     exp: "0–2 yrs", cat: "tech", desc: "",
     posted: today, logo: "", applyLink: "",
     badges: [], batches: [],
+    // govt-specific
+    vacancies: "", startDate: "", lastDate: "", notificationLink: "",
   };
   const [jf, setJf] = useState(emptyForm);
 
@@ -165,9 +202,14 @@ export default function AdminView({
     setErrors({});
     setEditJob({
       ...job,
-      tags:    Array.isArray(job.tags)    ? job.tags.join(", ")    : job.tags,
-      badges:  Array.isArray(job.badges)  ? job.badges  : [],
-      batches: Array.isArray(job.batches) ? job.batches : [],
+      tags:             Array.isArray(job.tags)    ? job.tags.join(", ") : job.tags,
+      badges:           Array.isArray(job.badges)  ? job.badges  : [],
+      batches:          Array.isArray(job.batches) ? job.batches : [],
+      // govt fields — map old notificationDate → startDate for backwards compat
+      vacancies:        job.vacancies        || "",
+      startDate:        job.startDate        || job.notificationDate || "",
+      lastDate:         job.lastDate         || "",
+      notificationLink: job.notificationLink || "",
     });
   };
 
@@ -356,7 +398,9 @@ export default function AdminView({
                             <span style={{ fontSize: 10, padding: "1px 7px", borderRadius: 20, fontWeight: 700, background: tc.bg, color: tc.fg, whiteSpace: "nowrap", flexShrink: 0 }}>{j.type}</span>
                           </div>
                           <div style={{ fontSize: 11, color: T.text2, display: "flex", gap: 6 }}>
-                            <span>{j.company}</span><span style={{ color: T.text3 }}>·</span><span>{j.location}</span><span style={{ color: T.text3 }}>·</span><span style={{ color: T.a3, fontWeight: 600 }}>{j.salary}</span>
+                            <span>{j.company}</span><span style={{ color: T.text3 }}>·</span><span>{j.location}</span>
+                            {j.cat === "govt" && j.vacancies && <><span style={{ color: T.text3 }}>·</span><span style={{ color: "#34d399", fontWeight: 600 }}>🏛 {j.vacancies} Posts</span></>}
+                            {j.cat === "govt" && j.lastDate   && <><span style={{ color: T.text3 }}>·</span><span style={{ color: "#fb923c", fontWeight: 600 }}>Last: {j.lastDate}</span></>}
                           </div>
                         </div>
                         <div onClick={(e) => e.stopPropagation()}>
@@ -403,6 +447,12 @@ export default function AdminView({
                       </select>
                     </Field>
                   </div>
+
+                  {/* ── GOVT FIELDS — only when cat is govt ── */}
+                  {jf.cat === "govt" && (
+                    <GovtFields data={jf} onChange={(key, val) => setJf((f) => ({ ...f, [key]: val }))} IS={IS} isMobile={isMobile} />
+                  )}
+
                   <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10, marginBottom: 10 }}>
                     <Field label="Experience" error={errors.exp}><input style={{ ...IS, border: `1px solid ${errors.exp ? "#ff7070" : T.border2}` }} value={jf.exp} onChange={(e) => { setJf((f) => ({ ...f, exp: e.target.value })); setErrors((er) => ({ ...er, exp: "" })); }} placeholder="0–2 yrs / Any Graduate" /></Field>
                     <Field label="Posted Date">
@@ -410,7 +460,7 @@ export default function AdminView({
                     </Field>
                   </div>
                   <div style={{ marginBottom: 10 }}>
-                    <Field label="Apply Link *"><input style={IS} value={jf.applyLink} onChange={(e) => setJf((f) => ({ ...f, applyLink: e.target.value }))} placeholder="https://careers.company.com/apply/job-id" /></Field>
+                    <Field label="Apply Link"><input style={IS} value={jf.applyLink} onChange={(e) => setJf((f) => ({ ...f, applyLink: e.target.value }))} placeholder="https://careers.company.com/apply/job-id" /></Field>
                   </div>
                   <div style={{ marginBottom: 10 }}>
                     <Field label="Eligible Badges (click to select)">
@@ -488,9 +538,13 @@ export default function AdminView({
                             <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2, flexWrap: "wrap" }}>
                               <span style={{ fontSize: 13, fontWeight: 600, color: T.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: isMobile ? "180px" : "420px" }}>{j.title}</span>
                               <span style={{ fontSize: 10, padding: "1px 7px", borderRadius: 20, fontWeight: 700, background: tc.bg, color: tc.fg, whiteSpace: "nowrap", flexShrink: 0 }}>{j.type}</span>
+                              {j.cat === "govt" && j.vacancies && (
+                                <span style={{ fontSize: 10, padding: "1px 7px", borderRadius: 20, fontWeight: 700, background: "rgba(52,211,153,0.15)", color: "#34d399", whiteSpace: "nowrap", flexShrink: 0 }}>🏛 {j.vacancies} Posts</span>
+                              )}
                             </div>
                             <div style={{ fontSize: 11, color: T.text2, display: "flex", gap: 4, flexWrap: "wrap" }}>
-                              <span>{j.company}</span><span style={{ color: T.text3 }}>·</span><span>{j.location}</span><span style={{ color: T.text3 }}>·</span><span style={{ color: T.a3, fontWeight: 600 }}>{j.salary}</span>
+                              <span>{j.company}</span><span style={{ color: T.text3 }}>·</span><span>{j.location}</span>
+                              {j.cat === "govt" && j.lastDate && <><span style={{ color: T.text3 }}>·</span><span style={{ color: "#fb923c", fontWeight: 600 }}>Last: {j.lastDate}</span></>}
                             </div>
                           </div>
                         </div>
@@ -577,6 +631,17 @@ export default function AdminView({
                   </select>
                 </Field>
               </div>
+
+              {/* ── GOVT FIELDS in edit modal ── */}
+              {editJob.cat === "govt" && (
+                <GovtFields
+                  data={editJob}
+                  onChange={(key, val) => setEditJob((j) => ({ ...j, [key]: val }))}
+                  IS={IS}
+                  isMobile={isMobile}
+                />
+              )}
+
               <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10, marginBottom: 10 }}>
                 <Field label="Experience"><input style={IS} value={editJob.exp} onChange={(e) => setEditJob((j) => ({ ...j, exp: e.target.value }))} /></Field>
                 <Field label="Posted Date">
@@ -615,7 +680,7 @@ export default function AdminView({
                 <Field label="Job Description"><textarea style={{ ...IS, minHeight: 120, resize: "vertical" }} value={editJob.desc || ""} onChange={(e) => setEditJob((j) => ({ ...j, desc: e.target.value }))} /></Field>
               </div>
               <div style={{ marginBottom: 14 }}>
-                <Field label="Apply Link *"><input style={IS} value={editJob.applyLink || ""} onChange={(e) => setEditJob((j) => ({ ...j, applyLink: e.target.value }))} placeholder="https://careers.company.com/..." /></Field>
+                <Field label="Apply Link"><input style={IS} value={editJob.applyLink || ""} onChange={(e) => setEditJob((j) => ({ ...j, applyLink: e.target.value }))} placeholder="https://careers.company.com/..." /></Field>
               </div>
               <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
                 <button onClick={() => setEditJob(null)} style={{ background: T.bg3, color: T.text2, border: `1px solid ${T.border2}`, padding: "8px 16px", borderRadius: 7, fontSize: 13, cursor: "pointer", fontFamily: "'Satoshi',sans-serif" }}>Cancel</button>
