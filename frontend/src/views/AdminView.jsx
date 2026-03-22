@@ -1,3 +1,4 @@
+// src/views/AdminView.jsx
 import { useState }              from "react";
 import Icon                      from "../components/shared/Icon";
 import ConfirmDialog             from "../components/dialogs/ConfirmDialog";
@@ -25,10 +26,10 @@ export default function AdminView({
   jobs, setJobs,
   showToast, T, isMobile, setSelJob,
   isDark, setIsDark,
-  onAddJob,     
-  onUpdateJob, 
-  onDeleteJob,  
-  onLogout,    
+  onAddJob,
+  onUpdateJob,
+  onDeleteJob,
+  onLogout,
 }) {
   const [tab,        setTab]        = useState("dashboard");
   const [confirmDel, setConfirmDel] = useState(null);
@@ -57,7 +58,7 @@ export default function AdminView({
 
   const [errors, setErrors] = useState({});
 
-  const REQUIRED = ["title", "company", "location", "salary", "cat", "type", "exp", "desc"];
+  // REQUIRED array removed — was unused (caused eslint warning)
 
   const validate = (data) => {
     const e = {};
@@ -79,7 +80,6 @@ export default function AdminView({
     });
   };
 
-  // ── ADD JOB → Firestore ───────────────────────────────────────────────────
   const addJob = async () => {
     const errs = validate(jf);
     if (Object.keys(errs).length > 0) {
@@ -103,7 +103,6 @@ export default function AdminView({
     }
   };
 
-  // ── SAVE EDIT → Firestore ─────────────────────────────────────────────────
   const saveEdit = async () => {
     if (!editJob?.title.trim()) return;
     setSaving(true);
@@ -123,7 +122,6 @@ export default function AdminView({
     }
   };
 
-  // ── DELETE → Firestore ────────────────────────────────────────────────────
   const doDelete = async () => {
     if (!confirmDel) return;
     try {
@@ -154,13 +152,12 @@ export default function AdminView({
           </div>
           <div>
             <div style={{ fontFamily: "'Clash Display',sans-serif", fontSize: 15, fontWeight: 700, color: "#e8eeff", lineHeight: 1.1 }}>
-              Carrer Club <span style={{ color: "#38bdf8" }}>Admin</span>
+              Career Club <span style={{ color: "#38bdf8" }}>Admin</span>
             </div>
             {!isMobile && <div style={{ fontSize: 10, color: "#3d4f6e" }}>Management Panel</div>}
           </div>
         </div>
 
-        {/* NAV RIGHT SIDE */}
         <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
           {!isMobile && (
             <>
@@ -172,8 +169,6 @@ export default function AdminView({
                 style={{ width: 34, height: 34, borderRadius: 9, background: "rgba(124,109,255,0.15)", border: "1px solid rgba(124,109,255,0.3)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15 }}>
                 {isDark ? "☀️" : "🌙"}
               </button>
-
-              {/* ── LOGOUT BUTTON (desktop nav) ── */}
               <button onClick={onLogout}
                 style={{ display: "flex", alignItems: "center", gap: 6, height: 34, padding: "0 14px", borderRadius: 9, background: "rgba(255,82,121,0.12)", border: "1px solid rgba(255,82,121,0.3)", cursor: "pointer", fontSize: 12, fontWeight: 600, color: "#ff5279", fontFamily: "'Satoshi',sans-serif", whiteSpace: "nowrap" }}>
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ff5279" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -185,8 +180,6 @@ export default function AdminView({
               </button>
             </>
           )}
-
-          {/* Mobile: just show logout icon */}
           {isMobile && (
             <button onClick={onLogout}
               style={{ width: 34, height: 34, borderRadius: 9, background: "rgba(255,82,121,0.12)", border: "1px solid rgba(255,82,121,0.3)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -209,7 +202,7 @@ export default function AdminView({
         <aside style={{ width: 220, flexShrink: 0, background: "rgba(10,14,26,0.97)", backdropFilter: "blur(20px)", borderRight: "1px solid rgba(100,130,255,0.12)", display: "flex", flexDirection: "column", padding: "1.25rem 0", position: isTablet ? "fixed" : "sticky", top: isTablet ? 0 : 56, left: 0, zIndex: isTablet ? 160 : "auto", height: isTablet ? "100vh" : "calc(100vh - 56px)", overflowY: "auto", transition: "transform 0.25s ease", transform: isTablet && !sideOpen ? "translateX(-100%)" : "translateX(0)" }}>
           {isTablet && (
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "1rem 1.25rem", borderBottom: "1px solid rgba(100,130,255,0.12)", marginBottom: "0.5rem" }}>
-              <div style={{ fontFamily: "'Clash Display',sans-serif", fontSize: 16, fontWeight: 700, color: "#e8eeff" }}>Carrer<span style={{ color: "#38bdf8" }}>Club</span></div>
+              <div style={{ fontFamily: "'Clash Display',sans-serif", fontSize: 16, fontWeight: 700, color: "#e8eeff" }}>Career<span style={{ color: "#38bdf8" }}>Club</span></div>
               <button onClick={() => setSideOpen(false)} style={{ width: 30, height: 30, borderRadius: 7, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <Icon path={I.close} size={15} color="#8896b3" />
               </button>
@@ -248,7 +241,6 @@ export default function AdminView({
             </button>
           )}
 
-          {/* ── LOGOUT BUTTON (sidebar) ── */}
           <div style={{ height: 1, background: "rgba(100,130,255,0.1)", margin: "0.75rem 0" }} />
           <button onClick={onLogout}
             style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 1rem", fontSize: 13, cursor: "pointer", fontFamily: "'Satoshi',sans-serif", border: "none", background: "transparent", color: "#ff5279", width: "100%", textAlign: "left", borderLeft: "2px solid transparent", transition: "all 0.15s" }}
@@ -359,48 +351,22 @@ export default function AdminView({
                   <Icon path={I.plus} size={14} color={T.accent} />Job details
                 </div>
                 <div style={{ padding: "1.25rem" }}>
-
-                  {/* Row 1: Title + Company */}
                   <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10, marginBottom: 10 }}>
                     <Field label="Job Title" error={errors.title}>
-                      <input
-                        style={{ ...IS, border: `1px solid ${errors.title ? "#ff7070" : T.border2}` }}
-                        value={jf.title}
-                        onChange={(e) => { setJf((f) => ({ ...f, title: e.target.value })); setErrors((er) => ({ ...er, title: "" })); }}
-                        placeholder="e.g. Frontend Developer"
-                      />
+                      <input style={{ ...IS, border: `1px solid ${errors.title ? "#ff7070" : T.border2}` }} value={jf.title} onChange={(e) => { setJf((f) => ({ ...f, title: e.target.value })); setErrors((er) => ({ ...er, title: "" })); }} placeholder="e.g. Frontend Developer" />
                     </Field>
                     <Field label="Company" error={errors.company}>
-                      <input
-                        style={{ ...IS, border: `1px solid ${errors.company ? "#ff7070" : T.border2}` }}
-                        value={jf.company}
-                        onChange={(e) => { setJf((f) => ({ ...f, company: e.target.value })); setErrors((er) => ({ ...er, company: "" })); }}
-                        placeholder="e.g. Zoho"
-                      />
+                      <input style={{ ...IS, border: `1px solid ${errors.company ? "#ff7070" : T.border2}` }} value={jf.company} onChange={(e) => { setJf((f) => ({ ...f, company: e.target.value })); setErrors((er) => ({ ...er, company: "" })); }} placeholder="e.g. Zoho" />
                     </Field>
                   </div>
-
-                  {/* Row 2: Location + Salary */}
                   <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10, marginBottom: 10 }}>
                     <Field label="Location" error={errors.location}>
-                      <input
-                        style={{ ...IS, border: `1px solid ${errors.location ? "#ff7070" : T.border2}` }}
-                        value={jf.location}
-                        onChange={(e) => { setJf((f) => ({ ...f, location: e.target.value })); setErrors((er) => ({ ...er, location: "" })); }}
-                        placeholder="Chennai / Remote"
-                      />
+                      <input style={{ ...IS, border: `1px solid ${errors.location ? "#ff7070" : T.border2}` }} value={jf.location} onChange={(e) => { setJf((f) => ({ ...f, location: e.target.value })); setErrors((er) => ({ ...er, location: "" })); }} placeholder="Chennai / Remote" />
                     </Field>
                     <Field label="Salary" error={errors.salary}>
-                      <input
-                        style={{ ...IS, border: `1px solid ${errors.salary ? "#ff7070" : T.border2}` }}
-                        value={jf.salary}
-                        onChange={(e) => { setJf((f) => ({ ...f, salary: e.target.value })); setErrors((er) => ({ ...er, salary: "" })); }}
-                        placeholder="6-9 LPA"
-                      />
+                      <input style={{ ...IS, border: `1px solid ${errors.salary ? "#ff7070" : T.border2}` }} value={jf.salary} onChange={(e) => { setJf((f) => ({ ...f, salary: e.target.value })); setErrors((er) => ({ ...er, salary: "" })); }} placeholder="6-9 LPA" />
                     </Field>
                   </div>
-
-                  {/* Row 3: Category + Work Type */}
                   <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10, marginBottom: 10 }}>
                     <Field label="Category" error={errors.cat}>
                       <select style={IS} value={jf.cat} onChange={(e) => { setJf((f) => ({ ...f, cat: e.target.value })); setErrors((er) => ({ ...er, cat: "" })); }}>
@@ -413,16 +379,9 @@ export default function AdminView({
                       </select>
                     </Field>
                   </div>
-
-                  {/* Row 4: Experience + Posted Date */}
                   <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10, marginBottom: 10 }}>
                     <Field label="Experience" error={errors.exp}>
-                      <input
-                        style={{ ...IS, border: `1px solid ${errors.exp ? "#ff7070" : T.border2}` }}
-                        value={jf.exp}
-                        onChange={(e) => { setJf((f) => ({ ...f, exp: e.target.value })); setErrors((er) => ({ ...er, exp: "" })); }}
-                        placeholder="0–2 yrs / Any Graduate"
-                      />
+                      <input style={{ ...IS, border: `1px solid ${errors.exp ? "#ff7070" : T.border2}` }} value={jf.exp} onChange={(e) => { setJf((f) => ({ ...f, exp: e.target.value })); setErrors((er) => ({ ...er, exp: "" })); }} placeholder="0–2 yrs / Any Graduate" />
                     </Field>
                     <Field label="Posted Date">
                       <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "9px 12px", borderRadius: 7, background: T.bg3, border: `1px solid ${T.border2}`, fontSize: 13, color: T.text2 }}>
@@ -430,60 +389,37 @@ export default function AdminView({
                       </div>
                     </Field>
                   </div>
-
-                  {/* Logo URL */}
                   <div style={{ marginBottom: 10 }}>
                     <Field label="Company Logo URL">
                       <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
                         <div style={{ width: 48, height: 48, borderRadius: 10, background: T.bg3, border: `1px solid ${T.border2}`, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", flexShrink: 0 }}>
-                          {jf.logo
-                            ? <img src={jf.logo} alt="preview" style={{ width: "100%", height: "100%", objectFit: "contain", padding: 4 }} onError={(e) => e.target.style.display = "none"} />
-                            : <span style={{ fontSize: 22 }}>{jf.emoji || "💼"}</span>}
+                          {jf.logo ? <img src={jf.logo} alt="preview" style={{ width: "100%", height: "100%", objectFit: "contain", padding: 4 }} onError={(e) => e.target.style.display = "none"} /> : <span style={{ fontSize: 22 }}>{jf.emoji || "💼"}</span>}
                         </div>
                         <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 5 }}>
                           <input style={IS} value={jf.logo} onChange={(e) => setJf((f) => ({ ...f, logo: e.target.value }))} placeholder="https://logo.clearbit.com/zoho.com" />
-                          <div style={{ fontSize: 11, color: T.text3 }}>
-                            Tip: use <span style={{ color: T.a3 }}>logo.clearbit.com/companyname.com</span>
-                          </div>
+                          <div style={{ fontSize: 11, color: T.text3 }}>Tip: use <span style={{ color: T.a3 }}>logo.clearbit.com/companyname.com</span></div>
                         </div>
                       </div>
                     </Field>
                   </div>
-
-                  {/* Row 5: Emoji + Tags */}
                   <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10, marginBottom: 10 }}>
                     <Field label="Emoji (fallback)">
                       <input style={IS} value={jf.emoji} onChange={(e) => setJf((f) => ({ ...f, emoji: e.target.value }))} placeholder="💼" />
                     </Field>
                     <Field label="Tags (comma separated)" error={errors.tags}>
-                      <input
-                        style={{ ...IS, border: `1px solid ${errors.tags ? "#ff7070" : T.border2}` }}
-                        value={jf.tags}
-                        onChange={(e) => { setJf((f) => ({ ...f, tags: e.target.value })); setErrors((er) => ({ ...er, tags: "" })); }}
-                        placeholder="React, Fresher OK, Full-time"
-                      />
+                      <input style={{ ...IS, border: `1px solid ${errors.tags ? "#ff7070" : T.border2}` }} value={jf.tags} onChange={(e) => { setJf((f) => ({ ...f, tags: e.target.value })); setErrors((er) => ({ ...er, tags: "" })); }} placeholder="React, Fresher OK, Full-time" />
                     </Field>
                   </div>
-
-                  {/* Description */}
                   <div style={{ marginBottom: 10 }}>
                     <Field label="Job Description" error={errors.desc}>
-                      <textarea
-                        style={{ ...IS, minHeight: 130, resize: "vertical", border: `1px solid ${errors.desc ? "#ff7070" : T.border2}` }}
-                        value={jf.desc}
-                        onChange={(e) => { setJf((f) => ({ ...f, desc: e.target.value })); setErrors((er) => ({ ...er, desc: "" })); }}
-                        placeholder="Responsibilities, eligibility, selection process..."
-                      />
+                      <textarea style={{ ...IS, minHeight: 130, resize: "vertical", border: `1px solid ${errors.desc ? "#ff7070" : T.border2}` }} value={jf.desc} onChange={(e) => { setJf((f) => ({ ...f, desc: e.target.value })); setErrors((er) => ({ ...er, desc: "" })); }} placeholder="Responsibilities, eligibility, selection process..." />
                     </Field>
                   </div>
-
-                  {/* Validation summary banner */}
                   {Object.keys(errors).some(k => errors[k]) && (
                     <div style={{ background: "rgba(255,112,112,0.1)", border: "1px solid rgba(255,112,112,0.35)", borderRadius: 8, padding: "10px 14px", marginBottom: 12, fontSize: 13, color: "#ff7070", display: "flex", alignItems: "center", gap: 8 }}>
                       ⚠ Please fill all required fields before posting.
                     </div>
                   )}
-
                   <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
                     <button onClick={() => { setJf(emptyForm); setErrors({}); }} style={{ background: T.bg3, color: T.text2, border: `1px solid ${T.border2}`, padding: "8px 14px", borderRadius: 7, fontSize: 13, cursor: "pointer", fontFamily: "'Satoshi',sans-serif" }}>Clear</button>
                     <button onClick={addJob} disabled={saving} style={{ background: saving ? T.bg3 : T.accent, color: saving ? T.text2 : T.accentFg, border: "none", padding: "8px 20px", borderRadius: 7, fontSize: 13, fontWeight: 700, cursor: saving ? "not-allowed" : "pointer", fontFamily: "'Clash Display',sans-serif", display: "flex", alignItems: "center", gap: 6 }}>
@@ -574,7 +510,6 @@ export default function AdminView({
         </div>
       </div>
 
-      {/* CONFIRM DELETE */}
       {confirmDel && (
         <ConfirmDialog
           title="Delete this job?"
@@ -585,7 +520,6 @@ export default function AdminView({
         />
       )}
 
-      {/* EDIT MODAL */}
       {editJob && (
         <div onClick={(e) => e.target === e.currentTarget && setEditJob(null)}
           style={{ position: "fixed", inset: 0, zIndex: 700, background: "rgba(0,0,0,0.75)", backdropFilter: "blur(10px)", display: "flex", alignItems: isMobile ? "flex-end" : "center", justifyContent: "center", padding: isMobile ? 0 : "1.5rem" }}>
@@ -631,18 +565,14 @@ export default function AdminView({
                 <Field label="Posted Date">
                   <input type="date" style={IS}
                     value={editJob.posted ? new Date(editJob.posted).toISOString().split("T")[0] : ""}
-                    onChange={(e) => {
-                      setEditJob((j) => ({ ...j, posted: new Date(e.target.value).toISOString() }));
-                    }} />
+                    onChange={(e) => setEditJob((j) => ({ ...j, posted: new Date(e.target.value).toISOString() }))} />
                 </Field>
               </div>
               <div style={{ marginBottom: 10 }}>
                 <Field label="Company Logo URL">
                   <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
                     <div style={{ width: 44, height: 44, borderRadius: 10, background: T.bg3, border: `1px solid ${T.border2}`, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", flexShrink: 0 }}>
-                      {editJob.logo
-                        ? <img src={editJob.logo} alt="preview" style={{ width: "100%", height: "100%", objectFit: "contain", padding: 3 }} onError={(e) => e.target.style.display = "none"} />
-                        : <span style={{ fontSize: 20 }}>{editJob.emoji}</span>}
+                      {editJob.logo ? <img src={editJob.logo} alt="preview" style={{ width: "100%", height: "100%", objectFit: "contain", padding: 3 }} onError={(e) => e.target.style.display = "none"} /> : <span style={{ fontSize: 20 }}>{editJob.emoji}</span>}
                     </div>
                     <input style={{ ...IS, flex: 1 }} value={editJob.logo || ""} onChange={(e) => setEditJob((j) => ({ ...j, logo: e.target.value }))} placeholder="https://logo.clearbit.com/company.com" />
                   </div>
@@ -659,8 +589,7 @@ export default function AdminView({
               </div>
               <div style={{ marginBottom: 14 }}>
                 <Field label="Apply Link *">
-                  <input style={IS} value={editJob.applyLink || ""} onChange={(e) => setEditJob((j) => ({ ...j, applyLink: e.target.value }))}
-                    placeholder="https://careers.company.com/..." />
+                  <input style={IS} value={editJob.applyLink || ""} onChange={(e) => setEditJob((j) => ({ ...j, applyLink: e.target.value }))} placeholder="https://careers.company.com/..." />
                 </Field>
               </div>
               <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>

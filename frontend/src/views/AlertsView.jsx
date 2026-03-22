@@ -14,6 +14,7 @@ export default function AlertsView({ jobs, T, isMobile }) {
   const [loc,  setLoc]  = useState("");
   const [freq, setFreq] = useState("Daily");
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     setAlerts((prev) => {
       const toAdd = savedJobs
@@ -46,7 +47,6 @@ export default function AlertsView({ jobs, T, isMobile }) {
         <Icon path={I.bell} size={20} color={T.a5} />Job Alerts
       </div>
 
-      {/* Auto alert notice */}
       {savedJobs.length > 0 && (
         <div style={{ background: T.ms2, border: `1px solid ${T.border2}`, borderRadius: 12, padding: "1rem 1.25rem", marginBottom: "1.25rem", display: "flex", alignItems: "center", gap: 12 }}>
           <Icon path={I.bookmark} size={20} color={T.accent} />
@@ -61,7 +61,6 @@ export default function AlertsView({ jobs, T, isMobile }) {
         </div>
       )}
 
-      {/* Create alert form */}
       <div style={{ background: T.bg2, border: `1px solid ${T.border}`, borderRadius: 14, padding: "1.25rem", marginBottom: "1.25rem" }}>
         <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: "1rem", display: "flex", alignItems: "center", gap: 6 }}>
           <Icon path={I.plus} size={14} color={T.a3} />Create new alert
@@ -98,7 +97,6 @@ export default function AlertsView({ jobs, T, isMobile }) {
         </div>
       </div>
 
-      {/* Alerts list */}
       <div style={{ background: T.bg2, border: `1px solid ${T.border}`, borderRadius: 14, overflow: "hidden" }}>
         <div style={{ padding: "0.9rem 1.1rem", borderBottom: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <span style={{ fontSize: 13, fontWeight: 600, color: T.text }}>Your alerts ({alerts.length})</span>
