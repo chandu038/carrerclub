@@ -19,7 +19,8 @@ import LoginView     from "./views/LoginView";
 import NotFoundView  from "./views/NotFoundView";
 import PrivacyView   from "./views/PrivacyView";
 import AboutView     from "./views/AboutView";
-import ContactView   from "./views/Contactview";
+import ContactView   from "./views/ContactView";
+
 export default function App() {
   const [isDark,      setIsDark]      = useState(true);
   const [jobs,        setJobs]        = useState([]);

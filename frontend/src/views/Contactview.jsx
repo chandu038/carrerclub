@@ -11,14 +11,6 @@ export default function ContactView({ T, isMobile }) {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const IS = {
-    background: T.inputBg, border: `1px solid ${T.border2}`,
-    borderRadius: 8, padding: "10px 14px", fontSize: 14,
-    color: T.text, width: "100%",
-    fontFamily: "'Satoshi',sans-serif", outline: "none",
-    boxSizing: "border-box",
-  };
-
   return (
     <div style={{ minHeight: "100vh", background: T.bg, fontFamily: "'Satoshi',sans-serif" }}>
       <div style={{ maxWidth: 760, margin: "0 auto", padding: isMobile ? "2rem 1.25rem" : "3rem 2rem" }}>
