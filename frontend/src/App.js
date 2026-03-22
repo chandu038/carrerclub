@@ -21,12 +21,9 @@ import PrivacyView   from "./views/PrivacyView";
 import AboutView     from "./views/AboutView";
 import ContactView   from "./views/ContactView";
 
-// ── Scroll to top on every route change ──────────────────────────────────────
 function ScrollToTop() {
   const { pathname } = useLocation();
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
+  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
   return null;
 }
 
@@ -58,7 +55,6 @@ export default function App() {
       .finally(() => setJobsLoading(false));
   }, []);
 
-  // ── Scroll to top button visibility ────────────────────────────────────────
   useEffect(() => {
     const handleScroll = () => setShowScrollTop(window.scrollY > 300);
     window.addEventListener("scroll", handleScroll);
@@ -128,21 +124,61 @@ export default function App() {
     { label: "Telegram",  emoji: "✈️", color: T.a3, bg: "rgba(56,189,248,0.10)", brd: "rgba(56,189,248,0.25)", href: "https://t.me/undefined890" },
   ];
 
+  // ── Job-themed loading screen ─────────────────────────────────────────────
   if (authLoading) {
     return (
-      <div style={{ minHeight: "100vh", background: isDark ? "#141414" : "#e8e4dd", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ width: 36, height: 36, border: "3px solid rgba(255,255,255,0.15)", borderTopColor: "#c8ff00", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
-        <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+      <div style={{ minHeight: "100vh", background: "#0a0e1a", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", fontFamily: "'Satoshi',sans-serif" }}>
+        <style>{`
+          @keyframes spin    { to { transform: rotate(360deg); } }
+          @keyframes fadeUp  { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+          @keyframes blink   { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+          @keyframes float   { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
+          @keyframes pulse   { 0%,100% { transform: scale(1); opacity: 0.7; } 50% { transform: scale(1.08); opacity: 1; } }
+        `}</style>
+
+        {/* Floating icons */}
+        <div style={{ position: "relative", width: 160, height: 160, marginBottom: 32 }}>
+          {/* Center briefcase */}
+          <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 64, height: 64, borderRadius: 18, background: "linear-gradient(135deg,#6366f1,#38bdf8)", display: "flex", alignItems: "center", justifyContent: "center", animation: "pulse 2s ease-in-out infinite", boxShadow: "0 0 40px rgba(99,102,241,0.4)" }}>
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/>
+            </svg>
+          </div>
+          {/* Orbiting icons */}
+          {[
+            { icon: "🏢", top: 0,     left: "50%",  ml: -18, mt: 0,   delay: "0s"    },
+            { icon: "💼", top: "50%", left: "100%", ml: -36, mt: -18, delay: "0.15s" },
+            { icon: "🎯", top: "100%",left: "50%",  ml: -18, mt: -36, delay: "0.3s"  },
+            { icon: "⭐", top: "50%", left: 0,      ml: 0,   mt: -18, delay: "0.45s" },
+          ].map((item, i) => (
+            <div key={i} style={{ position: "absolute", top: item.top, left: item.left, marginLeft: item.ml, marginTop: item.mt, width: 36, height: 36, borderRadius: 10, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, animation: "float 2.5s ease-in-out infinite", animationDelay: item.delay }}>
+              {item.icon}
+            </div>
+          ))}
+        </div>
+
+        {/* Brand */}
+        <div style={{ fontFamily: "'Clash Display',sans-serif", fontSize: 28, fontWeight: 700, color: "#e8eeff", letterSpacing: -1, marginBottom: 8, animation: "fadeUp 0.6s ease" }}>
+          Carrer<span style={{ color: "#38bdf8" }}>Club</span>
+        </div>
+
+        <div style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", marginBottom: 32, animation: "fadeUp 0.6s ease 0.1s both" }}>
+          Finding your next opportunity...
+        </div>
+
+        {/* Progress dots */}
+        <div style={{ display: "flex", gap: 8, animation: "fadeUp 0.6s ease 0.2s both" }}>
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} style={{ width: 8, height: 8, borderRadius: "50%", background: i === 0 ? "#6366f1" : i === 1 ? "#38bdf8" : i === 2 ? "#a78bfa" : "#34d399", animation: "blink 1.2s ease-in-out infinite", animationDelay: `${i * 0.2}s` }} />
+          ))}
+        </div>
       </div>
     );
   }
 
   return (
     <div style={{ fontFamily: "'Satoshi',sans-serif", background: T.bg, color: T.text, minHeight: "100vh", display: "flex", flexDirection: "column", transition: "background 0.22s,color 0.22s" }}>
-
-      {/* ── SCROLL TO TOP ON ROUTE CHANGE ── */}
       <ScrollToTop />
-
       <style>{FONTS}{`
         *{box-sizing:border-box;margin:0;padding:0}
         ::-webkit-scrollbar{width:3px;height:3px}
@@ -315,18 +351,11 @@ export default function App() {
           <Route path="/admin/flashfeed2025" element={
             user
               ? <AdminView
-                  jobs={jobs}
-                  setJobs={setJobs}
-                  showToast={showToast}
-                  T={T}
-                  isMobile={isMobile}
-                  setSelJob={setSelJob}
-                  isDark={isDark}
-                  setIsDark={setIsDark}
-                  onAddJob={handleAddJob}
-                  onUpdateJob={handleUpdateJob}
-                  onDeleteJob={handleDeleteJob}
-                  onLogout={handleLogout}
+                  jobs={jobs} setJobs={setJobs}
+                  showToast={showToast} T={T} isMobile={isMobile}
+                  setSelJob={setSelJob} isDark={isDark} setIsDark={setIsDark}
+                  onAddJob={handleAddJob} onUpdateJob={handleUpdateJob}
+                  onDeleteJob={handleDeleteJob} onLogout={handleLogout}
                 />
               : <LoginView T={T} />
           } />
@@ -341,8 +370,7 @@ export default function App() {
           job={jobs.find((j) => j.id === selJob.id) || selJob}
           onClose={() => setSelJob(null)}
           onSave={handleSave}
-          T={T}
-          isMobile={isMobile}
+          T={T} isMobile={isMobile}
         />
       )}
 
@@ -351,7 +379,7 @@ export default function App() {
         <Icon path={I.check} size={16} color="#fff" />{toast.msg}
       </div>
 
-      {/* ── SCROLL TO TOP BUTTON ── */}
+      {/* ── SCROLL TO TOP ── */}
       {!isAdmin && (
         <button onClick={scrollToTop}
           style={{ position: "fixed", bottom: 80, right: 22, zIndex: 998, width: 44, height: 44, borderRadius: 12, background: `linear-gradient(135deg,${T.accent},${T.a3})`, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 20px rgba(0,0,0,0.3)", transform: showScrollTop ? "translateY(0) scale(1)" : "translateY(80px) scale(0.8)", opacity: showScrollTop ? 1 : 0, transition: "all 0.3s cubic-bezier(0.34,1.4,0.64,1)", pointerEvents: showScrollTop ? "auto" : "none" }}>
