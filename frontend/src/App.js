@@ -21,16 +21,25 @@ import PrivacyView   from "./views/PrivacyView";
 import AboutView     from "./views/AboutView";
 import ContactView   from "./views/ContactView";
 
+// ── Scroll to top on every route change ──────────────────────────────────────
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
+
 export default function App() {
-  const [isDark,      setIsDark]      = useState(true);
-  const [jobs,        setJobs]        = useState([]);
-  const [jobsLoading, setJobsLoading] = useState(true);
-  const [selJob,      setSelJob]      = useState(null);
-  const [toast,       setToast]       = useState({ on: false, msg: "" });
-  const [menuOpen,    setMenuOpen]    = useState(false);
-  const [suggOpen,    setSuggOpen]    = useState(false);
+  const [isDark,        setIsDark]        = useState(true);
+  const [jobs,          setJobs]          = useState([]);
+  const [jobsLoading,   setJobsLoading]   = useState(true);
+  const [selJob,        setSelJob]        = useState(null);
+  const [toast,         setToast]         = useState({ on: false, msg: "" });
+  const [menuOpen,      setMenuOpen]      = useState(false);
+  const [suggOpen,      setSuggOpen]      = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const suggTimer                     = useRef(null);
+  const suggTimer                         = useRef(null);
 
   const navigate   = useNavigate();
   const location   = useLocation();
@@ -49,7 +58,7 @@ export default function App() {
       .finally(() => setJobsLoading(false));
   }, []);
 
-  // ── Scroll to top button visibility ──────────────────────────────────────
+  // ── Scroll to top button visibility ────────────────────────────────────────
   useEffect(() => {
     const handleScroll = () => setShowScrollTop(window.scrollY > 300);
     window.addEventListener("scroll", handleScroll);
@@ -130,6 +139,10 @@ export default function App() {
 
   return (
     <div style={{ fontFamily: "'Satoshi',sans-serif", background: T.bg, color: T.text, minHeight: "100vh", display: "flex", flexDirection: "column", transition: "background 0.22s,color 0.22s" }}>
+
+      {/* ── SCROLL TO TOP ON ROUTE CHANGE ── */}
+      <ScrollToTop />
+
       <style>{FONTS}{`
         *{box-sizing:border-box;margin:0;padding:0}
         ::-webkit-scrollbar{width:3px;height:3px}
@@ -340,30 +353,8 @@ export default function App() {
 
       {/* ── SCROLL TO TOP BUTTON ── */}
       {!isAdmin && (
-        <button
-          onClick={scrollToTop}
-          style={{
-            position: "fixed",
-            bottom: 80,
-            right: 22,
-            zIndex: 998,
-            width: 44,
-            height: 44,
-            borderRadius: 12,
-            background: `linear-gradient(135deg,${T.accent},${T.a3})`,
-            border: "none",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
-            transform: showScrollTop ? "translateY(0) scale(1)" : "translateY(80px) scale(0.8)",
-            opacity: showScrollTop ? 1 : 0,
-            transition: "all 0.3s cubic-bezier(0.34,1.4,0.64,1)",
-            pointerEvents: showScrollTop ? "auto" : "none",
-          }}
-          title="Back to top"
-        >
+        <button onClick={scrollToTop}
+          style={{ position: "fixed", bottom: 80, right: 22, zIndex: 998, width: 44, height: 44, borderRadius: 12, background: `linear-gradient(135deg,${T.accent},${T.a3})`, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 20px rgba(0,0,0,0.3)", transform: showScrollTop ? "translateY(0) scale(1)" : "translateY(80px) scale(0.8)", opacity: showScrollTop ? 1 : 0, transition: "all 0.3s cubic-bezier(0.34,1.4,0.64,1)", pointerEvents: showScrollTop ? "auto" : "none" }}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M18 15l-6-6-6 6" />
           </svg>

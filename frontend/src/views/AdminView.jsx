@@ -13,9 +13,102 @@ function Field({ label, error, children }) {
         {label}{error ? " *" : ""}
       </label>
       {children}
-      {error && (
-        <div style={{ fontSize: 11, color: "#ff7070", display: "flex", alignItems: "center", gap: 4, marginTop: 1 }}>
-          ⚠ {error}
+      {error && <div style={{ fontSize: 11, color: "#ff7070", display: "flex", alignItems: "center", gap: 4, marginTop: 1 }}>⚠ {error}</div>}
+    </div>
+  );
+}
+
+const BADGE_OPTIONS = [
+  { id: "fresher",  label: "Fresher OK",          color: "#34d399", bg: "rgba(52,211,153,0.12)",  border: "rgba(52,211,153,0.35)"  },
+  { id: "anygrad",  label: "Any Graduate",         color: "#38bdf8", bg: "rgba(56,189,248,0.12)",  border: "rgba(56,189,248,0.35)"  },
+  { id: "remote",   label: "Remote OK",            color: "#a78bfa", bg: "rgba(167,139,250,0.12)", border: "rgba(167,139,250,0.35)" },
+  { id: "noexp",    label: "No Experience Needed", color: "#fb923c", bg: "rgba(251,146,60,0.12)",  border: "rgba(251,146,60,0.35)"  },
+  { id: "parttime", label: "Part-time OK",         color: "#f472b6", bg: "rgba(244,114,182,0.12)", border: "rgba(244,114,182,0.35)" },
+  { id: "walkin",   label: "Walk-in",              color: "#facc15", bg: "rgba(250,204,21,0.12)",  border: "rgba(250,204,21,0.35)"  },
+];
+
+const currentYear = new Date().getFullYear();
+const PRESET_YEARS = Array.from({ length: 6 }, (_, i) => currentYear - 1 + i);
+const BATCH_COLOR = "#c084fc";
+const BATCH_BG    = "rgba(192,132,252,0.12)";
+const BATCH_BRD   = "rgba(192,132,252,0.35)";
+
+function BadgePicker({ value = [], onChange, T }) {
+  const toggle = (id) => onChange(value.includes(id) ? value.filter((v) => v !== id) : [...value, id]);
+  return (
+    <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+      {BADGE_OPTIONS.map((b) => {
+        const active = value.includes(b.id);
+        return (
+          <button key={b.id} type="button" onClick={() => toggle(b.id)}
+            style={{ padding: "4px 12px", borderRadius: 20, fontSize: 12, fontWeight: 600, cursor: "pointer", border: `1px solid ${active ? b.border : T.border2}`, background: active ? b.bg : "transparent", color: active ? b.color : T.text3, transition: "all 0.15s", fontFamily: "'Satoshi',sans-serif" }}>
+            {active ? "✓ " : ""}{b.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function BatchPicker({ value = [], onChange, T, IS }) {
+  const [customInput, setCustomInput] = useState("");
+
+  const toggle = (yr) => onChange(value.includes(yr) ? value.filter((v) => v !== yr) : [...value, yr]);
+
+  const addCustom = () => {
+    const yr = parseInt(customInput.trim(), 10);
+    if (!isNaN(yr) && yr > 2000 && yr < 2100 && !value.includes(yr)) {
+      onChange([...value, yr]);
+    }
+    setCustomInput("");
+  };
+
+  const handleKey = (e) => { if (e.key === "Enter") { e.preventDefault(); addCustom(); } };
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      {/* Preset year buttons */}
+      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+        {PRESET_YEARS.map((yr) => {
+          const active = value.includes(yr);
+          return (
+            <button key={yr} type="button" onClick={() => toggle(yr)}
+              style={{ padding: "4px 14px", borderRadius: 20, fontSize: 12, fontWeight: 700, cursor: "pointer", border: `1px solid ${active ? BATCH_BRD : T.border2}`, background: active ? BATCH_BG : "transparent", color: active ? BATCH_COLOR : T.text3, transition: "all 0.15s", fontFamily: "'Satoshi',sans-serif" }}>
+              {active ? "🎓 " : ""}{yr}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Manual entry */}
+      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        <input
+          style={{ ...IS, flex: 1, fontSize: 12 }}
+          value={customInput}
+          onChange={(e) => setCustomInput(e.target.value)}
+          onKeyDown={handleKey}
+          placeholder="Enter any year e.g. 2027, 2028..."
+          type="number"
+          min="2000" max="2100"
+        />
+        <button type="button" onClick={addCustom}
+          style={{ padding: "7px 14px", borderRadius: 7, background: BATCH_BG, border: `1px solid ${BATCH_BRD}`, color: BATCH_COLOR, fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "'Satoshi',sans-serif", whiteSpace: "nowrap" }}>
+          + Add
+        </button>
+      </div>
+
+      {/* Selected years as removable pills */}
+      {value.length > 0 && (
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+          {value.map((yr, i) => (
+            <span key={i} style={{ display: "flex", alignItems: "center", gap: 5, background: BATCH_BG, border: `1px solid ${BATCH_BRD}`, padding: "3px 10px", borderRadius: 20, fontSize: 12, color: BATCH_COLOR, fontWeight: 700 }}>
+              🎓 {yr}
+              <button type="button" onClick={() => onChange(value.filter((v) => v !== yr))}
+                style={{ background: "none", border: "none", cursor: "pointer", color: BATCH_COLOR, fontSize: 14, lineHeight: 1, padding: 0, display: "flex", alignItems: "center" }}>
+                ×
+              </button>
+            </span>
+          ))}
         </div>
       )}
     </div>
@@ -26,10 +119,7 @@ export default function AdminView({
   jobs, setJobs,
   showToast, T, isMobile, setSelJob,
   isDark, setIsDark,
-  onAddJob,
-  onUpdateJob,
-  onDeleteJob,
-  onLogout,
+  onAddJob, onUpdateJob, onDeleteJob, onLogout,
 }) {
   const [tab,        setTab]        = useState("dashboard");
   const [confirmDel, setConfirmDel] = useState(null);
@@ -46,6 +136,7 @@ export default function AdminView({
     tags: "", emoji: "💼", type: "Full-time",
     exp: "0–2 yrs", cat: "tech", desc: "",
     posted: today, logo: "", applyLink: "",
+    badges: [], batches: [],
   };
   const [jf, setJf] = useState(emptyForm);
 
@@ -57,8 +148,6 @@ export default function AdminView({
   };
 
   const [errors, setErrors] = useState({});
-
-  // REQUIRED array removed — was unused (caused eslint warning)
 
   const validate = (data) => {
     const e = {};
@@ -76,31 +165,23 @@ export default function AdminView({
     setErrors({});
     setEditJob({
       ...job,
-      tags: Array.isArray(job.tags) ? job.tags.join(", ") : job.tags,
+      tags:    Array.isArray(job.tags)    ? job.tags.join(", ")    : job.tags,
+      badges:  Array.isArray(job.badges)  ? job.badges  : [],
+      batches: Array.isArray(job.batches) ? job.batches : [],
     });
   };
 
   const addJob = async () => {
     const errs = validate(jf);
-    if (Object.keys(errs).length > 0) {
-      setErrors(errs);
-      showToast("Please fill all required fields.");
-      return;
-    }
+    if (Object.keys(errs).length > 0) { setErrors(errs); showToast("Please fill all required fields."); return; }
     setErrors({});
     setSaving(true);
     try {
-      await onAddJob({
-        ...jf,
-        tags: jf.tags.split(",").map((t) => t.trim()).filter(Boolean),
-      });
+      await onAddJob({ ...jf, tags: jf.tags.split(",").map((t) => t.trim()).filter(Boolean) });
       setJf(emptyForm);
       setTab("manage");
-    } catch {
-      showToast("Failed to post job.");
-    } finally {
-      setSaving(false);
-    }
+    } catch { showToast("Failed to post job."); }
+    finally { setSaving(false); }
   };
 
   const saveEdit = async () => {
@@ -109,28 +190,21 @@ export default function AdminView({
     try {
       const updated = {
         ...editJob,
-        tags: typeof editJob.tags === "string"
-          ? editJob.tags.split(",").map((t) => t.trim()).filter(Boolean)
-          : editJob.tags,
+        tags:    typeof editJob.tags === "string" ? editJob.tags.split(",").map((t) => t.trim()).filter(Boolean) : editJob.tags,
+        badges:  Array.isArray(editJob.badges)  ? editJob.badges  : [],
+        batches: Array.isArray(editJob.batches) ? editJob.batches : [],
       };
       await onUpdateJob(editJob.id, updated);
       setEditJob(null);
-    } catch {
-      showToast("Failed to update job.");
-    } finally {
-      setSaving(false);
-    }
+    } catch { showToast("Failed to update job."); }
+    finally { setSaving(false); }
   };
 
   const doDelete = async () => {
     if (!confirmDel) return;
-    try {
-      await onDeleteJob(confirmDel.id);
-    } catch {
-      showToast("Failed to delete job.");
-    } finally {
-      setConfirmDel(null);
-    }
+    try { await onDeleteJob(confirmDel.id); }
+    catch { showToast("Failed to delete job."); }
+    finally { setConfirmDel(null); }
   };
 
   const TAB_COLORS = { dashboard: T.a3, addjob: T.accent, manage: T.a4, settings: T.a5 };
@@ -138,12 +212,11 @@ export default function AdminView({
   return (
     <div style={{ minHeight: "100vh", background: T.bg, display: "flex", flexDirection: "column" }}>
 
-      {/* ── ADMIN NAV ── */}
+      {/* NAV */}
       <div style={{ background: "rgba(10,14,26,0.96)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", borderBottom: "1px solid rgba(100,130,255,0.18)", padding: "0 1rem", height: 56, display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 200, flexShrink: 0, gap: 8 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
           {isTablet && (
-            <button onClick={() => setSideOpen((o) => !o)}
-              style={{ width: 34, height: 34, borderRadius: 9, background: "rgba(124,109,255,0.15)", border: "1px solid rgba(124,109,255,0.3)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <button onClick={() => setSideOpen((o) => !o)} style={{ width: 34, height: 34, borderRadius: 9, background: "rgba(124,109,255,0.15)", border: "1px solid rgba(124,109,255,0.3)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
               <Icon path={I.bars} size={17} color="#a99fff" />
             </button>
           )}
@@ -151,54 +224,35 @@ export default function AdminView({
             <Icon path={I.settings} size={16} color="#fff" />
           </div>
           <div>
-            <div style={{ fontFamily: "'Clash Display',sans-serif", fontSize: 15, fontWeight: 700, color: "#e8eeff", lineHeight: 1.1 }}>
-              Career Club <span style={{ color: "#38bdf8" }}>Admin</span>
-            </div>
+            <div style={{ fontFamily: "'Clash Display',sans-serif", fontSize: 15, fontWeight: 700, color: "#e8eeff", lineHeight: 1.1 }}>Career Club <span style={{ color: "#38bdf8" }}>Admin</span></div>
             {!isMobile && <div style={{ fontSize: 10, color: "#3d4f6e" }}>Management Panel</div>}
           </div>
         </div>
-
         <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
           {!isMobile && (
             <>
               <div style={{ display: "flex", alignItems: "center", gap: 5, background: "rgba(52,211,153,0.12)", border: "1px solid rgba(52,211,153,0.25)", borderRadius: 20, padding: "4px 10px", fontSize: 11, color: "#34d399", fontWeight: 600, whiteSpace: "nowrap" }}>
-                <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#34d399", animation: "blink 2s infinite" }} />
-                Secret Access
+                <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#34d399", animation: "blink 2s infinite" }} />Secret Access
               </div>
-              <button onClick={() => setIsDark((d) => !d)}
-                style={{ width: 34, height: 34, borderRadius: 9, background: "rgba(124,109,255,0.15)", border: "1px solid rgba(124,109,255,0.3)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15 }}>
-                {isDark ? "☀️" : "🌙"}
-              </button>
-              <button onClick={onLogout}
-                style={{ display: "flex", alignItems: "center", gap: 6, height: 34, padding: "0 14px", borderRadius: 9, background: "rgba(255,82,121,0.12)", border: "1px solid rgba(255,82,121,0.3)", cursor: "pointer", fontSize: 12, fontWeight: 600, color: "#ff5279", fontFamily: "'Satoshi',sans-serif", whiteSpace: "nowrap" }}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ff5279" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                  <polyline points="16 17 21 12 16 7" />
-                  <line x1="21" y1="12" x2="9" y2="12" />
-                </svg>
+              <button onClick={() => setIsDark((d) => !d)} style={{ width: 34, height: 34, borderRadius: 9, background: "rgba(124,109,255,0.15)", border: "1px solid rgba(124,109,255,0.3)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15 }}>{isDark ? "☀️" : "🌙"}</button>
+              <button onClick={onLogout} style={{ display: "flex", alignItems: "center", gap: 6, height: 34, padding: "0 14px", borderRadius: 9, background: "rgba(255,82,121,0.12)", border: "1px solid rgba(255,82,121,0.3)", cursor: "pointer", fontSize: 12, fontWeight: 600, color: "#ff5279", fontFamily: "'Satoshi',sans-serif", whiteSpace: "nowrap" }}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ff5279" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
                 Logout
               </button>
             </>
           )}
           {isMobile && (
-            <button onClick={onLogout}
-              style={{ width: 34, height: 34, borderRadius: 9, background: "rgba(255,82,121,0.12)", border: "1px solid rgba(255,82,121,0.3)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ff5279" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                <polyline points="16 17 21 12 16 7" />
-                <line x1="21" y1="12" x2="9" y2="12" />
-              </svg>
+            <button onClick={onLogout} style={{ width: 34, height: 34, borderRadius: 9, background: "rgba(255,82,121,0.12)", border: "1px solid rgba(255,82,121,0.3)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ff5279" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
             </button>
           )}
         </div>
       </div>
 
       <div style={{ display: "flex", flex: 1, position: "relative" }}>
-        {isTablet && sideOpen && (
-          <div onClick={() => setSideOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 150, background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)" }} />
-        )}
+        {isTablet && sideOpen && <div onClick={() => setSideOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 150, background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)" }} />}
 
-        {/* ── SIDEBAR ── */}
+        {/* SIDEBAR */}
         <aside style={{ width: 220, flexShrink: 0, background: "rgba(10,14,26,0.97)", backdropFilter: "blur(20px)", borderRight: "1px solid rgba(100,130,255,0.12)", display: "flex", flexDirection: "column", padding: "1.25rem 0", position: isTablet ? "fixed" : "sticky", top: isTablet ? 0 : 56, left: 0, zIndex: isTablet ? 160 : "auto", height: isTablet ? "100vh" : "calc(100vh - 56px)", overflowY: "auto", transition: "transform 0.25s ease", transform: isTablet && !sideOpen ? "translateX(-100%)" : "translateX(0)" }}>
           {isTablet && (
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "1rem 1.25rem", borderBottom: "1px solid rgba(100,130,255,0.12)", marginBottom: "0.5rem" }}>
@@ -222,7 +276,6 @@ export default function AdminView({
               </button>
             );
           })}
-
           <div style={{ height: 1, background: "rgba(100,130,255,0.1)", margin: "1rem 0" }} />
           <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: 2, color: "#3d4f6e", padding: "0 1rem", marginBottom: "0.5rem", fontWeight: 600 }}>Site</div>
           <a href="/" style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 1rem", fontSize: 13, fontFamily: "'Satoshi',sans-serif", textDecoration: "none", color: "#8896b3", borderLeft: "2px solid transparent", transition: "all 0.15s" }}
@@ -233,38 +286,26 @@ export default function AdminView({
             </div>
             Back to Home
           </a>
-
           {isTablet && (
             <button onClick={() => setIsDark((d) => !d)} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 1rem", fontSize: 13, cursor: "pointer", fontFamily: "'Satoshi',sans-serif", border: "none", background: "transparent", color: "#8896b3", width: "100%", textAlign: "left", marginTop: 4 }}>
               <div style={{ width: 30, height: 30, borderRadius: 8, background: "rgba(124,109,255,0.08)", border: "1px solid rgba(124,109,255,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14 }}>{isDark ? "☀️" : "🌙"}</div>
               {isDark ? "Light Mode" : "Dark Mode"}
             </button>
           )}
-
           <div style={{ height: 1, background: "rgba(100,130,255,0.1)", margin: "0.75rem 0" }} />
           <button onClick={onLogout}
             style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 1rem", fontSize: 13, cursor: "pointer", fontFamily: "'Satoshi',sans-serif", border: "none", background: "transparent", color: "#ff5279", width: "100%", textAlign: "left", borderLeft: "2px solid transparent", transition: "all 0.15s" }}
             onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,82,121,0.08)"; e.currentTarget.style.borderLeftColor = "#ff5279"; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderLeftColor = "transparent"; }}>
             <div style={{ width: 30, height: 30, borderRadius: 8, background: "rgba(255,82,121,0.1)", border: "1px solid rgba(255,82,121,0.25)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff5279" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                <polyline points="16 17 21 12 16 7" />
-                <line x1="21" y1="12" x2="9" y2="12" />
-              </svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff5279" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
             </div>
             Logout
           </button>
-
           <div style={{ height: 1, background: "rgba(100,130,255,0.1)", margin: "0.75rem 0" }} />
           <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: 2, color: "#3d4f6e", padding: "0 1rem", marginBottom: "0.75rem", fontWeight: 600 }}>Quick Stats</div>
           <div style={{ padding: "0 1rem", display: "flex", flexDirection: "column", gap: 8 }}>
-            {[
-              ["Total",     jobs.length,                                        "#38bdf8"],
-              ["Govt",      jobs.filter((j) => j.cat === "govt").length,        "#34d399"],
-              ["Full-time", jobs.filter((j) => j.type === "Full-time").length,  "#a99fff"],
-              ["Remote",    jobs.filter((j) => j.location === "Remote").length, "#ff5279"],
-            ].map(([l, v, c]) => (
+            {[["Total", jobs.length, "#38bdf8"], ["Govt", jobs.filter((j) => j.cat === "govt").length, "#34d399"], ["Full-time", jobs.filter((j) => j.type === "Full-time").length, "#a99fff"], ["Remote", jobs.filter((j) => j.location === "Remote").length, "#ff5279"]].map(([l, v, c]) => (
               <div key={l} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 10px", borderRadius: 8, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}>
                 <span style={{ fontSize: 12, color: "#8896b3" }}>{l}</span>
                 <span style={{ fontSize: 13, fontWeight: 700, color: c }}>{v}</span>
@@ -273,7 +314,7 @@ export default function AdminView({
           </div>
         </aside>
 
-        {/* ── CONTENT ── */}
+        {/* CONTENT */}
         <div style={{ flex: 1, minWidth: 0, padding: isMobile ? "1.25rem 1rem" : "1.75rem 2rem", overflowY: "auto" }}>
 
           {/* DASHBOARD */}
@@ -283,17 +324,10 @@ export default function AdminView({
                 <Icon path={I.grid} size={20} color={T.a3} />Dashboard
               </div>
               <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4,1fr)", gap: 12, marginBottom: "1.5rem" }}>
-                {[
-                  ["Total Jobs", jobs.length,                                        T.a3,    T.inBg,  I.briefcase],
-                  ["Full-time",  jobs.filter((j) => j.type === "Full-time").length,  T.accent, T.ftBg, I.check],
-                  ["Govt Jobs",  jobs.filter((j) => j.cat === "govt").length,        T.a6,    T.gbBg,  I.govt],
-                  ["Remote",     jobs.filter((j) => j.location === "Remote").length, T.a2,    T.ptBg,  I.map],
-                ].map(([l, v, c, bg, ic]) => (
+                {[["Total Jobs", jobs.length, T.a3, T.inBg, I.briefcase], ["Full-time", jobs.filter((j) => j.type === "Full-time").length, T.accent, T.ftBg, I.check], ["Govt Jobs", jobs.filter((j) => j.cat === "govt").length, T.a6, T.gbBg, I.govt], ["Remote", jobs.filter((j) => j.location === "Remote").length, T.a2, T.ptBg, I.map]].map(([l, v, c, bg, ic]) => (
                   <div key={l} style={{ background: bg, border: `1px solid ${T.border}`, borderRadius: 14, padding: "1.1rem" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}>
-                      <div style={{ width: 28, height: 28, borderRadius: 7, background: `${c}22`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <Icon path={ic} size={14} color={c} />
-                      </div>
+                      <div style={{ width: 28, height: 28, borderRadius: 7, background: `${c}22`, display: "flex", alignItems: "center", justifyContent: "center" }}><Icon path={ic} size={14} color={c} /></div>
                       <span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 1, color: T.text2 }}>{l}</span>
                     </div>
                     <div style={{ fontFamily: "'Clash Display',sans-serif", fontSize: 34, fontWeight: 700, color: c }}>{v}</div>
@@ -322,9 +356,7 @@ export default function AdminView({
                             <span style={{ fontSize: 10, padding: "1px 7px", borderRadius: 20, fontWeight: 700, background: tc.bg, color: tc.fg, whiteSpace: "nowrap", flexShrink: 0 }}>{j.type}</span>
                           </div>
                           <div style={{ fontSize: 11, color: T.text2, display: "flex", gap: 6 }}>
-                            <span>{j.company}</span><span style={{ color: T.text3 }}>·</span>
-                            <span>{j.location}</span><span style={{ color: T.text3 }}>·</span>
-                            <span style={{ color: T.a3, fontWeight: 600 }}>{j.salary}</span>
+                            <span>{j.company}</span><span style={{ color: T.text3 }}>·</span><span>{j.location}</span><span style={{ color: T.text3 }}>·</span><span style={{ color: T.a3, fontWeight: 600 }}>{j.salary}</span>
                           </div>
                         </div>
                         <div onClick={(e) => e.stopPropagation()}>
@@ -352,20 +384,12 @@ export default function AdminView({
                 </div>
                 <div style={{ padding: "1.25rem" }}>
                   <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10, marginBottom: 10 }}>
-                    <Field label="Job Title" error={errors.title}>
-                      <input style={{ ...IS, border: `1px solid ${errors.title ? "#ff7070" : T.border2}` }} value={jf.title} onChange={(e) => { setJf((f) => ({ ...f, title: e.target.value })); setErrors((er) => ({ ...er, title: "" })); }} placeholder="e.g. Frontend Developer" />
-                    </Field>
-                    <Field label="Company" error={errors.company}>
-                      <input style={{ ...IS, border: `1px solid ${errors.company ? "#ff7070" : T.border2}` }} value={jf.company} onChange={(e) => { setJf((f) => ({ ...f, company: e.target.value })); setErrors((er) => ({ ...er, company: "" })); }} placeholder="e.g. Zoho" />
-                    </Field>
+                    <Field label="Job Title" error={errors.title}><input style={{ ...IS, border: `1px solid ${errors.title ? "#ff7070" : T.border2}` }} value={jf.title} onChange={(e) => { setJf((f) => ({ ...f, title: e.target.value })); setErrors((er) => ({ ...er, title: "" })); }} placeholder="e.g. Frontend Developer" /></Field>
+                    <Field label="Company" error={errors.company}><input style={{ ...IS, border: `1px solid ${errors.company ? "#ff7070" : T.border2}` }} value={jf.company} onChange={(e) => { setJf((f) => ({ ...f, company: e.target.value })); setErrors((er) => ({ ...er, company: "" })); }} placeholder="e.g. Zoho" /></Field>
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10, marginBottom: 10 }}>
-                    <Field label="Location" error={errors.location}>
-                      <input style={{ ...IS, border: `1px solid ${errors.location ? "#ff7070" : T.border2}` }} value={jf.location} onChange={(e) => { setJf((f) => ({ ...f, location: e.target.value })); setErrors((er) => ({ ...er, location: "" })); }} placeholder="Chennai / Remote" />
-                    </Field>
-                    <Field label="Salary" error={errors.salary}>
-                      <input style={{ ...IS, border: `1px solid ${errors.salary ? "#ff7070" : T.border2}` }} value={jf.salary} onChange={(e) => { setJf((f) => ({ ...f, salary: e.target.value })); setErrors((er) => ({ ...er, salary: "" })); }} placeholder="6-9 LPA" />
-                    </Field>
+                    <Field label="Location" error={errors.location}><input style={{ ...IS, border: `1px solid ${errors.location ? "#ff7070" : T.border2}` }} value={jf.location} onChange={(e) => { setJf((f) => ({ ...f, location: e.target.value })); setErrors((er) => ({ ...er, location: "" })); }} placeholder="Chennai / Remote" /></Field>
+                    <Field label="Salary" error={errors.salary}><input style={{ ...IS, border: `1px solid ${errors.salary ? "#ff7070" : T.border2}` }} value={jf.salary} onChange={(e) => { setJf((f) => ({ ...f, salary: e.target.value })); setErrors((er) => ({ ...er, salary: "" })); }} placeholder="6-9 LPA" /></Field>
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10, marginBottom: 10 }}>
                     <Field label="Category" error={errors.cat}>
@@ -380,12 +404,25 @@ export default function AdminView({
                     </Field>
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10, marginBottom: 10 }}>
-                    <Field label="Experience" error={errors.exp}>
-                      <input style={{ ...IS, border: `1px solid ${errors.exp ? "#ff7070" : T.border2}` }} value={jf.exp} onChange={(e) => { setJf((f) => ({ ...f, exp: e.target.value })); setErrors((er) => ({ ...er, exp: "" })); }} placeholder="0–2 yrs / Any Graduate" />
-                    </Field>
+                    <Field label="Experience" error={errors.exp}><input style={{ ...IS, border: `1px solid ${errors.exp ? "#ff7070" : T.border2}` }} value={jf.exp} onChange={(e) => { setJf((f) => ({ ...f, exp: e.target.value })); setErrors((er) => ({ ...er, exp: "" })); }} placeholder="0–2 yrs / Any Graduate" /></Field>
                     <Field label="Posted Date">
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "9px 12px", borderRadius: 7, background: T.bg3, border: `1px solid ${T.border2}`, fontSize: 13, color: T.text2 }}>
-                        📅 Auto-set to today when posted
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "9px 12px", borderRadius: 7, background: T.bg3, border: `1px solid ${T.border2}`, fontSize: 13, color: T.text2 }}>📅 Auto-set to today when posted</div>
+                    </Field>
+                  </div>
+                  <div style={{ marginBottom: 10 }}>
+                    <Field label="Apply Link *"><input style={IS} value={jf.applyLink} onChange={(e) => setJf((f) => ({ ...f, applyLink: e.target.value }))} placeholder="https://careers.company.com/apply/job-id" /></Field>
+                  </div>
+                  <div style={{ marginBottom: 10 }}>
+                    <Field label="Eligible Badges (click to select)">
+                      <div style={{ padding: "10px 12px", background: T.bg3, borderRadius: 8, border: `1px solid ${T.border2}` }}>
+                        <BadgePicker value={jf.badges} onChange={(v) => setJf((f) => ({ ...f, badges: v }))} T={T} />
+                      </div>
+                    </Field>
+                  </div>
+                  <div style={{ marginBottom: 10 }}>
+                    <Field label="Eligible Batch Years">
+                      <div style={{ padding: "10px 12px", background: T.bg3, borderRadius: 8, border: `1px solid ${T.border2}` }}>
+                        <BatchPicker value={jf.batches} onChange={(v) => setJf((f) => ({ ...f, batches: v }))} T={T} IS={IS} />
                       </div>
                     </Field>
                   </div>
@@ -403,12 +440,8 @@ export default function AdminView({
                     </Field>
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10, marginBottom: 10 }}>
-                    <Field label="Emoji (fallback)">
-                      <input style={IS} value={jf.emoji} onChange={(e) => setJf((f) => ({ ...f, emoji: e.target.value }))} placeholder="💼" />
-                    </Field>
-                    <Field label="Tags (comma separated)" error={errors.tags}>
-                      <input style={{ ...IS, border: `1px solid ${errors.tags ? "#ff7070" : T.border2}` }} value={jf.tags} onChange={(e) => { setJf((f) => ({ ...f, tags: e.target.value })); setErrors((er) => ({ ...er, tags: "" })); }} placeholder="React, Fresher OK, Full-time" />
-                    </Field>
+                    <Field label="Emoji (fallback)"><input style={IS} value={jf.emoji} onChange={(e) => setJf((f) => ({ ...f, emoji: e.target.value }))} placeholder="💼" /></Field>
+                    <Field label="Tags (comma separated)" error={errors.tags}><input style={{ ...IS, border: `1px solid ${errors.tags ? "#ff7070" : T.border2}` }} value={jf.tags} onChange={(e) => { setJf((f) => ({ ...f, tags: e.target.value })); setErrors((er) => ({ ...er, tags: "" })); }} placeholder="React, Fresher OK, Full-time" /></Field>
                   </div>
                   <div style={{ marginBottom: 10 }}>
                     <Field label="Job Description" error={errors.desc}>
@@ -416,15 +449,12 @@ export default function AdminView({
                     </Field>
                   </div>
                   {Object.keys(errors).some(k => errors[k]) && (
-                    <div style={{ background: "rgba(255,112,112,0.1)", border: "1px solid rgba(255,112,112,0.35)", borderRadius: 8, padding: "10px 14px", marginBottom: 12, fontSize: 13, color: "#ff7070", display: "flex", alignItems: "center", gap: 8 }}>
-                      ⚠ Please fill all required fields before posting.
-                    </div>
+                    <div style={{ background: "rgba(255,112,112,0.1)", border: "1px solid rgba(255,112,112,0.35)", borderRadius: 8, padding: "10px 14px", marginBottom: 12, fontSize: 13, color: "#ff7070", display: "flex", alignItems: "center", gap: 8 }}>⚠ Please fill all required fields before posting.</div>
                   )}
                   <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
                     <button onClick={() => { setJf(emptyForm); setErrors({}); }} style={{ background: T.bg3, color: T.text2, border: `1px solid ${T.border2}`, padding: "8px 14px", borderRadius: 7, fontSize: 13, cursor: "pointer", fontFamily: "'Satoshi',sans-serif" }}>Clear</button>
                     <button onClick={addJob} disabled={saving} style={{ background: saving ? T.bg3 : T.accent, color: saving ? T.text2 : T.accentFg, border: "none", padding: "8px 20px", borderRadius: 7, fontSize: 13, fontWeight: 700, cursor: saving ? "not-allowed" : "pointer", fontFamily: "'Clash Display',sans-serif", display: "flex", alignItems: "center", gap: 6 }}>
-                      <Icon path={I.plus} size={14} color={saving ? T.text2 : T.accentFg} />
-                      {saving ? "Posting..." : "Post Job"}
+                      <Icon path={I.plus} size={14} color={saving ? T.text2 : T.accentFg} />{saving ? "Posting..." : "Post Job"}
                     </button>
                   </div>
                 </div>
@@ -439,10 +469,8 @@ export default function AdminView({
                 <Icon path={I.list} size={20} color={T.a4} />Manage Jobs
               </div>
               <div style={{ background: T.bg2, border: `1px solid ${T.border}`, borderRadius: 14, overflow: "hidden" }}>
-                <div style={{ padding: "0.9rem 1.1rem", borderBottom: `1px solid ${T.border}`, fontSize: 13, fontWeight: 600, color: T.text, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <Icon path={I.list} size={14} color={T.a3} />All listings ({jobs.length})
-                  </div>
+                <div style={{ padding: "0.9rem 1.1rem", borderBottom: `1px solid ${T.border}`, fontSize: 13, fontWeight: 600, color: T.text }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}><Icon path={I.list} size={14} color={T.a3} />All listings ({jobs.length})</div>
                 </div>
                 <div>
                   {jobs.map((j) => {
@@ -462,9 +490,7 @@ export default function AdminView({
                               <span style={{ fontSize: 10, padding: "1px 7px", borderRadius: 20, fontWeight: 700, background: tc.bg, color: tc.fg, whiteSpace: "nowrap", flexShrink: 0 }}>{j.type}</span>
                             </div>
                             <div style={{ fontSize: 11, color: T.text2, display: "flex", gap: 4, flexWrap: "wrap" }}>
-                              <span>{j.company}</span><span style={{ color: T.text3 }}>·</span>
-                              <span>{j.location}</span><span style={{ color: T.text3 }}>·</span>
-                              <span style={{ color: T.a3, fontWeight: 600 }}>{j.salary}</span>
+                              <span>{j.company}</span><span style={{ color: T.text3 }}>·</span><span>{j.location}</span><span style={{ color: T.text3 }}>·</span><span style={{ color: T.a3, fontWeight: 600 }}>{j.salary}</span>
                             </div>
                           </div>
                         </div>
@@ -510,16 +536,9 @@ export default function AdminView({
         </div>
       </div>
 
-      {confirmDel && (
-        <ConfirmDialog
-          title="Delete this job?"
-          message={`"${confirmDel.title}" will be permanently removed.`}
-          onConfirm={doDelete}
-          onCancel={() => setConfirmDel(null)}
-          T={T}
-        />
-      )}
+      {confirmDel && <ConfirmDialog title="Delete this job?" message={`"${confirmDel.title}" will be permanently removed.`} onConfirm={doDelete} onCancel={() => setConfirmDel(null)} T={T} />}
 
+      {/* EDIT MODAL */}
       {editJob && (
         <div onClick={(e) => e.target === e.currentTarget && setEditJob(null)}
           style={{ position: "fixed", inset: 0, zIndex: 700, background: "rgba(0,0,0,0.75)", backdropFilter: "blur(10px)", display: "flex", alignItems: isMobile ? "flex-end" : "center", justifyContent: "center", padding: isMobile ? 0 : "1.5rem" }}>
@@ -527,9 +546,7 @@ export default function AdminView({
             {isMobile && <div style={{ width: 40, height: 4, background: T.border2, borderRadius: 4, margin: "10px auto 0" }} />}
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "1.1rem 1.25rem", borderBottom: `1px solid ${T.border}` }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <div style={{ width: 32, height: 32, borderRadius: 8, background: T.ms2, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <Icon path={I.edit} size={16} color={T.accent} />
-                </div>
+                <div style={{ width: 32, height: 32, borderRadius: 8, background: T.ms2, display: "flex", alignItems: "center", justifyContent: "center" }}><Icon path={I.edit} size={16} color={T.accent} /></div>
                 <div>
                   <div style={{ fontFamily: "'Clash Display',sans-serif", fontSize: 16, fontWeight: 700, color: T.text }}>Edit Job</div>
                   <div style={{ fontSize: 11, color: T.text2 }}>{editJob.company}</div>
@@ -563,9 +580,7 @@ export default function AdminView({
               <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10, marginBottom: 10 }}>
                 <Field label="Experience"><input style={IS} value={editJob.exp} onChange={(e) => setEditJob((j) => ({ ...j, exp: e.target.value }))} /></Field>
                 <Field label="Posted Date">
-                  <input type="date" style={IS}
-                    value={editJob.posted ? new Date(editJob.posted).toISOString().split("T")[0] : ""}
-                    onChange={(e) => setEditJob((j) => ({ ...j, posted: new Date(e.target.value).toISOString() }))} />
+                  <input type="date" style={IS} value={editJob.posted ? new Date(editJob.posted).toISOString().split("T")[0] : ""} onChange={(e) => setEditJob((j) => ({ ...j, posted: new Date(e.target.value).toISOString() }))} />
                 </Field>
               </div>
               <div style={{ marginBottom: 10 }}>
@@ -582,21 +597,30 @@ export default function AdminView({
                 <Field label="Tags"><input style={IS} value={editJob.tags || ""} onChange={(e) => setEditJob((j) => ({ ...j, tags: e.target.value }))} /></Field>
                 <Field label="Emoji"><input style={IS} value={editJob.emoji} onChange={(e) => setEditJob((j) => ({ ...j, emoji: e.target.value }))} /></Field>
               </div>
-              <div style={{ marginBottom: 14 }}>
-                <Field label="Job Description">
-                  <textarea style={{ ...IS, minHeight: 120, resize: "vertical" }} value={editJob.desc || ""} onChange={(e) => setEditJob((j) => ({ ...j, desc: e.target.value }))} />
+              <div style={{ marginBottom: 10 }}>
+                <Field label="Eligible Badges">
+                  <div style={{ padding: "10px 12px", background: T.bg3, borderRadius: 8, border: `1px solid ${T.border2}` }}>
+                    <BadgePicker value={editJob.badges || []} onChange={(v) => setEditJob((j) => ({ ...j, badges: v }))} T={T} />
+                  </div>
+                </Field>
+              </div>
+              <div style={{ marginBottom: 10 }}>
+                <Field label="Eligible Batch Years">
+                  <div style={{ padding: "10px 12px", background: T.bg3, borderRadius: 8, border: `1px solid ${T.border2}` }}>
+                    <BatchPicker value={editJob.batches || []} onChange={(v) => setEditJob((j) => ({ ...j, batches: v }))} T={T} IS={IS} />
+                  </div>
                 </Field>
               </div>
               <div style={{ marginBottom: 14 }}>
-                <Field label="Apply Link *">
-                  <input style={IS} value={editJob.applyLink || ""} onChange={(e) => setEditJob((j) => ({ ...j, applyLink: e.target.value }))} placeholder="https://careers.company.com/..." />
-                </Field>
+                <Field label="Job Description"><textarea style={{ ...IS, minHeight: 120, resize: "vertical" }} value={editJob.desc || ""} onChange={(e) => setEditJob((j) => ({ ...j, desc: e.target.value }))} /></Field>
+              </div>
+              <div style={{ marginBottom: 14 }}>
+                <Field label="Apply Link *"><input style={IS} value={editJob.applyLink || ""} onChange={(e) => setEditJob((j) => ({ ...j, applyLink: e.target.value }))} placeholder="https://careers.company.com/..." /></Field>
               </div>
               <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
                 <button onClick={() => setEditJob(null)} style={{ background: T.bg3, color: T.text2, border: `1px solid ${T.border2}`, padding: "8px 16px", borderRadius: 7, fontSize: 13, cursor: "pointer", fontFamily: "'Satoshi',sans-serif" }}>Cancel</button>
                 <button onClick={saveEdit} disabled={saving} style={{ background: saving ? T.bg3 : T.accent, color: saving ? T.text2 : T.accentFg, border: "none", padding: "8px 20px", borderRadius: 7, fontSize: 13, fontWeight: 700, cursor: saving ? "not-allowed" : "pointer", fontFamily: "'Clash Display',sans-serif", display: "flex", alignItems: "center", gap: 6 }}>
-                  <Icon path={I.check} size={14} color={saving ? T.text2 : T.accentFg} />
-                  {saving ? "Saving..." : "Save Changes"}
+                  <Icon path={I.check} size={14} color={saving ? T.text2 : T.accentFg} />{saving ? "Saving..." : "Save Changes"}
                 </button>
               </div>
             </div>
