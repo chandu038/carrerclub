@@ -121,7 +121,7 @@ export default function App() {
 
   const SUGG_LINKS = [
     { label: "Send Mail", emoji: "✉️", color: T.a2, bg: "rgba(255,100,80,0.10)", brd: "rgba(255,100,80,0.25)", href: "https://mail.google.com/mail/?view=cm&to=darapanenic1@gmail.com&su=Job Suggestion — CarrerClub" },
-    { label: "Telegram",  emoji: "✈️", color: T.a3, bg: "rgba(56,189,248,0.10)", brd: "rgba(56,189,248,0.25)", href: "https://t.me/undefined890" },
+    { label: "Telegram",  emoji: "✈️", color: T.a3, bg: "rgba(56,189,248,0.10)", brd: "rgba(56,189,248,0.25)", href: "https://t.me/wPR9T_5q2bYwZWZl" },
   ];
 
   // ── Loading screen ────────────────────────────────────────────────────────

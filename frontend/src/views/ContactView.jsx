@@ -55,9 +55,9 @@ export default function ContactView({ T, isMobile }) {
             <div style={{ fontFamily: "'Clash Display',sans-serif", fontSize: 16, fontWeight: 700, color: T.text, marginBottom: "0.5rem" }}>Telegram</div>
             <div style={{ fontSize: 13, color: T.text2, marginBottom: "1rem" }}>Message us on Telegram for faster responses.</div>
             <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", background: T.bg3, borderRadius: 8, border: `1px solid ${T.border2}`, marginBottom: "0.75rem" }}>
-              <span style={{ fontSize: 13, color: T.text }}>@undefined890</span>
+              <span style={{ fontSize: 13, color: T.text }}>@Carrer_Club</span>
             </div>
-            <a href="https://t.me/undefined890" target="_blank" rel="noreferrer"
+            <a href="https://t.me/wPR9T_5q2bYwZWZl" target="_blank" rel="noreferrer"
               style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "9px", borderRadius: 8, background: T.a3, color: "#fff", textDecoration: "none", fontSize: 13, fontWeight: 700, fontFamily: "'Clash Display',sans-serif" }}>
               Open Telegram
             </a>

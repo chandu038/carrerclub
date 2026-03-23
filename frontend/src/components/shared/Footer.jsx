@@ -99,7 +99,7 @@ export default function Footer({ T }) {
           </a>
 
           {/* Telegram */}
-          <a href="https://t.me/undefined890"
+          <a href="https://t.me/wPR9T_5q2bYwZWZl"
             target="_blank" rel="noreferrer"
             style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 16px", borderRadius: 10, background: T.inBg, border: `1px solid ${T.a3}44`, color: T.a3, fontSize: 13, fontWeight: 600, textDecoration: "none", transition: "all 0.15s", fontFamily: "'Satoshi',sans-serif" }}
             onMouseEnter={(e) => e.currentTarget.style.background = T.bg3}
