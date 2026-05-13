@@ -6,7 +6,6 @@ import { isNew, BADGE_STYLES, BATCH_STYLE } from "../shared/JobCard";
 
 const SITE_URL = "https://carrerclub.in";
 
-// Generate a readable slug from title + company
 function makeSlug(title, company) {
   return [title, company]
     .filter(Boolean)
@@ -45,11 +44,9 @@ function isExpired(dateStr) {
   return new Date(dateStr) < new Date();
 }
 
-// ── Share Sheet ───────────────────────────────────────────────────────────────
 function ShareSheet({ job, T, isMobile, onClose }) {
   const [copied, setCopied] = useState(false);
 
-  // Clean slug-only URL — no Firebase ID
   const slug     = makeSlug(job.title, job.company);
   const shareUrl = `${SITE_URL}/browse?job=${slug}`;
   const cleanLoc = job.location ? job.location.replace(/_/g, " ") : "";
@@ -78,7 +75,6 @@ function ShareSheet({ job, T, isMobile, onClose }) {
     { label: "LinkedIn",    emoji: "💼", color: "#60a5fa", bg: "rgba(10,102,194,0.12)",  brd: "rgba(10,102,194,0.35)",  href: `https://www.linkedin.com/sharing/share-offsite/?url=${encUrl}` },
   ];
 
-  // Mobile: bottom sheet
   if (isMobile) {
     return (
       <>
@@ -111,7 +107,6 @@ function ShareSheet({ job, T, isMobile, onClose }) {
     );
   }
 
-  // Desktop: dropdown
   return (
     <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, width: 240, background: T.bg2, border: `1px solid ${T.border2}`, borderRadius: 14, overflow: "hidden", boxShadow: "0 16px 48px rgba(0,0,0,0.4)", animation: "fadeUp 0.18s ease", zIndex: 800 }}>
       <div style={{ padding: "8px 12px", fontSize: 11, textTransform: "uppercase", letterSpacing: 1.4, color: T.text3, fontWeight: 700, borderBottom: `1px solid ${T.border}`, background: T.bg3 }}>
@@ -154,8 +149,6 @@ export default function JobDialog({ job, onClose, onSave, T, isMobile }) {
 
   return (
     <Dialog onClose={onClose} T={T} isMobile={isMobile}>
-
-      {/* ── HEADER ── */}
       <div style={{ background: `linear-gradient(135deg,${T.ms1},${T.ms3})`, borderBottom: `1px solid ${T.border}`, padding: isMobile ? "1.25rem 1rem 1rem" : "1.5rem 1.25rem 1.25rem", position: "relative" }}>
         {_isNew && (
           <div style={{ position: "absolute", top: 12, left: "50%", transform: "translateX(-50%)", background: "linear-gradient(135deg,#ff5279,#ff8c42)", color: "#fff", fontSize: 11, fontWeight: 800, padding: "3px 14px", borderRadius: 20, letterSpacing: 1, boxShadow: "0 2px 10px rgba(255,82,121,0.45)", whiteSpace: "nowrap", zIndex: 1 }}>
@@ -185,7 +178,6 @@ export default function JobDialog({ job, onClose, onSave, T, isMobile }) {
             </div>
           </div>
 
-          {/* Action buttons */}
           <div style={{ display: "flex", gap: 5, flexShrink: 0 }}>
             <button onClick={() => onSave(job.id)}
               style={{ width: 32, height: 32, borderRadius: 8, border: `1px solid ${job.saved ? T.accent : T.border2}`, background: job.saved ? T.accent : T.bg3, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -213,7 +205,6 @@ export default function JobDialog({ job, onClose, onSave, T, isMobile }) {
           </div>
         </div>
 
-        {/* Badges */}
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: "0.85rem" }}>
           {!isGovt && <>
             <span style={{ background: tc.bg, color: tc.fg, fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 20 }}>{job.type}</span>
@@ -230,10 +221,8 @@ export default function JobDialog({ job, onClose, onSave, T, isMobile }) {
         </div>
       </div>
 
-      {/* ── BODY ── */}
       <div style={{ padding: isMobile ? "0 1rem 1.5rem" : "0 1.25rem 1.75rem" }}>
 
-        {/* Govt info panel */}
         {isGovt && (job.vacancies || job.startDate || job.lastDate || job.notificationLink) && (
           <div style={{ background: "rgba(52,211,153,0.06)", border: "1px solid rgba(52,211,153,0.2)", borderRadius: 10, padding: "0.85rem 1rem", margin: "1rem 0 0" }}>
             <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 1.2, color: "#34d399", fontWeight: 700, marginBottom: 10 }}>🏛️ Government Job Info</div>
@@ -255,7 +244,6 @@ export default function JobDialog({ job, onClose, onSave, T, isMobile }) {
           </div>
         )}
 
-        {/* Tags — non-govt only */}
         {!isGovt && job.tags?.length > 0 && (
           <div style={{ background: T.ms1, borderRadius: 10, padding: "0.85rem 1rem", margin: "1rem 0 0" }}>
             <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 1.2, color: T.a3, fontWeight: 700, marginBottom: 8, display: "flex", alignItems: "center", gap: 5 }}>
@@ -267,7 +255,6 @@ export default function JobDialog({ job, onClose, onSave, T, isMobile }) {
           </div>
         )}
 
-        {/* Job details grid */}
         <div style={{ background: T.ms2, borderRadius: 10, padding: "0.85rem 1rem", margin: "0.75rem 0 0" }}>
           <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 1.2, color: T.accent, fontWeight: 700, marginBottom: 10, display: "flex", alignItems: "center", gap: 5 }}>
             <Icon path={I.briefcase} size={12} color={T.accent} />Job details
@@ -287,7 +274,6 @@ export default function JobDialog({ job, onClose, onSave, T, isMobile }) {
           </div>
         </div>
 
-        {/* Description */}
         {job.desc && (
           <div style={{ background: T.ms3, borderRadius: 10, padding: "0.85rem 1rem", margin: "0.75rem 0 0" }}>
             <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 1.2, color: T.a4, fontWeight: 700, marginBottom: 10, display: "flex", alignItems: "center", gap: 5 }}>
@@ -297,7 +283,6 @@ export default function JobDialog({ job, onClose, onSave, T, isMobile }) {
           </div>
         )}
 
-        {/* Apply button */}
         {job.applyLink ? (
           <a href={job.applyLink} target="_blank" rel="noreferrer"
             style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, width: "100%", padding: 14, borderRadius: 10, marginTop: "1rem", background: isGovt ? `linear-gradient(135deg,${T.a6},${T.a3})` : `linear-gradient(135deg,${T.a3},${T.a4})`, color: "#fff", fontSize: 15, fontWeight: 700, textDecoration: "none", fontFamily: "'Clash Display',sans-serif", boxSizing: "border-box" }}>
