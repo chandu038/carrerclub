@@ -18,11 +18,26 @@
 
 ## ✨ Features
 
+### 👤 For Job Seekers
 - 🔍 **Search & Filter** — Find jobs by title, location, or category
 - 💼 **Multiple Job Types** — Full-time, part-time, remote, and government jobs
 - 🇮🇳 **India-Focused** — Curated listings relevant to the Indian job market
 - ⚡ **Fast & Responsive** — Optimized React frontend with a clean UI
 - 📱 **Mobile Friendly** — Works seamlessly on phones, tablets, and desktops
+
+### 🛠️ Admin Panel
+- 📊 **Dashboard Overview** — Live stats for Total Jobs, Full-time, Govt Jobs, and Remote listings at a glance
+- ➕ **Post a Job** — Rich job creation form with fields for:
+  - Job Title, Company, Location, Salary
+  - Category (e.g. Tech & Dev), Work Type (Full-time, Remote, etc.)
+  - Experience level, Apply Link, Posted Date (auto-set)
+  - Eligible Badges — Fresher OK, Any Graduate, Remote OK, No Experience Needed, Part-time OK, Walk-in
+  - Eligible Batch Years (2025–2030 and custom)
+  - Company Logo URL (Clearbit integration), Emoji fallback
+  - Tags (comma separated) and full Job Description
+- 📋 **Manage Listings** — View and edit all job postings from one place
+- 🔒 **Secret Access** — Protected admin panel with secure login
+- 🕐 **Recent Listings** — Quickly view and edit the latest job posts from the dashboard
 
 ---
 
