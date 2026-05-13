@@ -1,7 +1,6 @@
 import { useState } from "react";
 import Icon from "./Icon";
-import { I, CATS, formatPosted, cleanSalary, formatShortDate } from "../../constants";
-import { TYPE_COLORS } from "../../themes";
+import { I, cleanSalary, formatShortDate } from "../../constants";
 
 export function isNew(posted) {
   if (!posted) return false;
@@ -28,12 +27,7 @@ function isExpired(dateStr) {
 
 export default function JobCard({ job, onClick, onSave, T }) {
   const [hovered, setHovered] = useState(false);
-  const tc       = TYPE_COLORS(T)[job.type] || TYPE_COLORS(T)["Full-time"];
-  const cat      = CATS.find((c) => c.id === job.cat);
-  const catColor = cat?.color ? T[cat.color] : T.a3;
   const _isNew   = isNew(job.posted);
-  const badges   = Array.isArray(job.badges)  ? job.badges  : [];
-  const batches  = Array.isArray(job.batches) ? job.batches : [];
   const isGovt   = job.cat === "govt";
 
   return (
