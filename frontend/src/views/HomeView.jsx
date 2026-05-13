@@ -33,33 +33,20 @@ export default function HomeView({ jobs, T, isMobile, setSelJob, onSave }) {
   useEffect(() => {
     const el = scrollRef.current;
     if (!el || recent.length === 0) return;
-
     let paused = false;
-
     const tick = () => {
       if (!paused) {
         el.scrollLeft += 1;
-        if (el.scrollLeft >= el.scrollWidth / 2) {
-          el.scrollLeft = 0;
-        }
+        if (el.scrollLeft >= el.scrollWidth / 2) el.scrollLeft = 0;
       }
     };
-
     const id = setInterval(tick, 20);
-
-    const pause = () => {
-      paused = true;
-    };
-
-    const resume = () => {
-      paused = false;
-    };
-
+    const pause = () => { paused = true; };
+    const resume = () => { paused = false; };
     el.addEventListener("mouseenter", pause);
     el.addEventListener("mouseleave", resume);
     el.addEventListener("touchstart", pause, { passive: true });
     el.addEventListener("touchend", resume, { passive: true });
-
     return () => {
       clearInterval(id);
       el.removeEventListener("mouseenter", pause);
@@ -69,327 +56,222 @@ export default function HomeView({ jobs, T, isMobile, setSelJob, onSave }) {
     };
   }, [recent.length]);
 
+  const gridCols = isMobile ? "1fr" : w < 1000 ? "1fr 1fr" : "repeat(3,1fr)";
+  const catCols = isMobile ? "repeat(2,1fr)" : w < 900 ? "repeat(3,1fr)" : "repeat(4,1fr)";
+
   return (
-    <div
-      style={{
-        flex: 1,
-        minWidth: 0,
-        width: "100%",
-        overflowX: "hidden",
-      }}
-    >
-      <div
-        style={{
+    <div style={{ flex: 1, minWidth: 0, overflowX: "hidden" }}>
+
+      <div style={{
+        position: "relative",
+        overflow: "hidden",
+        padding: isMobile ? "2.5rem 1rem 2rem" : "0",
+        minHeight: isMobile ? "auto" : 520,
+        display: "flex",
+        alignItems: "stretch"
+      }}>
+        <div style={{ position: "absolute", inset: 0, background: `linear-gradient(135deg, ${T.ms1} 0%, ${T.bg} 55%, ${T.ms3}22 100%)`, borderBottom: `1px solid ${T.border}` }} />
+        <div style={{ position: "absolute", width: isMobile ? 300 : 700, height: isMobile ? 300 : 600, borderRadius: "50%", background: `radial-gradient(ellipse,${T.ms3} 0%,transparent 65%)`, top: isMobile ? -100 : -200, right: isMobile ? -100 : -200, pointerEvents: "none" }} />
+        <div style={{ position: "absolute", width: isMobile ? 200 : 400, height: isMobile ? 200 : 400, borderRadius: "50%", background: `radial-gradient(ellipse,${T.ms2} 0%,transparent 70%)`, bottom: isMobile ? -60 : -120, left: isMobile ? -40 : -80, pointerEvents: "none" }} />
+
+        <div style={{
           position: "relative",
-          overflow: "hidden",
-          padding: isMobile ? "2rem 1rem" : "0",
-          minHeight: isMobile ? "auto" : 520,
+          zIndex: 2,
+          width: "100%",
+          maxWidth: 1280,
+          margin: "0 auto",
+          padding: isMobile ? "0" : "4rem 3rem",
           display: "flex",
-          alignItems: "stretch",
-        }}
-      >
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: `linear-gradient(135deg, ${T.ms1} 0%, ${T.bg} 55%, ${T.ms3}22 100%)`,
-            borderBottom: `1px solid ${T.border}`,
-          }}
-        />
-
-        <div
-          style={{
-            position: "relative",
-            zIndex: 2,
-            width: "100%",
-            maxWidth: 1280,
-            margin: "0 auto",
-            padding: isMobile ? "0" : "4rem 2rem",
-            display: "flex",
-            flexDirection: w < 900 ? "column" : "row",
-            alignItems: "center",
-            gap: isMobile ? "2rem" : "4rem",
-          }}
-        >
-          <div
-            style={{
-              flex: 1,
-              minWidth: 0,
-              width: "100%",
-            }}
-          >
-            <div
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 6,
-                fontSize: 11,
-                textTransform: "uppercase",
-                letterSpacing: 2,
-                color: T.accent,
-                fontWeight: 700,
-                marginBottom: "1rem",
-                background: `${T.accent}12`,
-                border: `1px solid ${T.accent}33`,
-                padding: "5px 12px",
-                borderRadius: 20,
-              }}
-            >
-              <Icon path={I.bell} size={12} color={T.accent} />
-              Updated daily
+          alignItems: "center",
+          gap: isMobile ? 0 : "4rem",
+          flexDirection: isMobile ? "column" : "row"
+        }}>
+          <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
+            <div style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+              fontSize: 11,
+              textTransform: "uppercase",
+              letterSpacing: 2.5,
+              color: T.accent,
+              fontWeight: 700,
+              marginBottom: "1rem",
+              background: `${T.accent}12`,
+              border: `1px solid ${T.accent}33`,
+              padding: "5px 12px",
+              borderRadius: 20
+            }}>
+              <Icon path={I.bell} size={12} color={T.accent} />Updated daily
             </div>
-
-            <h1
-              style={{
-                fontFamily: "'Clash Display',sans-serif",
-                fontSize: isMobile ? "2.3rem" : "4rem",
-                fontWeight: 700,
-                lineHeight: 1,
-                letterSpacing: -2,
-                color: T.text,
-                marginBottom: "1rem",
-              }}
-            >
-              Find your
-              <br />
-              next{" "}
-              <span
-                style={{
-                  color: T.a3,
-                }}
-              >
-                opportunity.
-              </span>
+            <h1 style={{
+              fontFamily: "'Clash Display',sans-serif",
+              fontSize: isMobile ? "2.2rem" : "4.2rem",
+              fontWeight: 700,
+              lineHeight: 1.05,
+              letterSpacing: isMobile ? -1.5 : -2.5,
+              color: T.text,
+              marginBottom: "1.25rem"
+            }}>
+              Find your<br />next{" "}
+              <span style={{ color: T.a3, textShadow: `0 0 60px ${T.a3}55` }}>opportunity.</span>
             </h1>
-
-            <p
-              style={{
-                color: T.text2,
-                fontSize: isMobile ? 13 : 15,
-                lineHeight: 1.7,
-                marginBottom: "1.5rem",
-                maxWidth: 500,
-              }}
-            >
-              {jobs.length}+ fresh listings across tech, design,
-              marketing, finance, government & more.
+            <p style={{ color: T.text2, fontSize: isMobile ? 13 : 15, lineHeight: 1.75, marginBottom: "1.5rem", maxWidth: 460 }}>
+              {jobs.length}+ fresh listings across tech, design, marketing, finance, government & more — updated every day.
             </p>
-
-            <div
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: 8,
-                marginBottom: "1.5rem",
-              }}
-            >
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: "1.5rem" }}>
               {[
-                {
-                  l: `${jobs.filter((j) => isToday(j.posted)).length} today`,
-                  bg: T.ftBg,
-                  fg: T.ftFg,
-                },
-                {
-                  l: `${jobs.filter((j) => j.cat === "govt").length} govt`,
-                  bg: T.gbBg,
-                  fg: T.gbFg,
-                },
-                {
-                  l: `${jobs.filter((j) => j.location === "Remote").length} remote`,
-                  bg: T.inBg,
-                  fg: T.inFg,
-                },
-                {
-                  l: `${savedCount} saved`,
-                  bg: T.ms3,
-                  fg: T.a4,
-                },
+                { l: `${jobs.filter(j => isToday(j.posted)).length} today`, bg: T.ftBg, fg: T.ftFg },
+                { l: `${jobs.filter(j => j.cat === "govt").length} govt`, bg: T.gbBg, fg: T.gbFg },
+                { l: `${jobs.filter(j => j.location === "Remote").length} remote`, bg: T.inBg, fg: T.inFg },
+                { l: `${savedCount} saved`, bg: T.ms3, fg: T.a4 },
               ].map((p) => (
-                <span
-                  key={p.l}
-                  style={{
-                    background: p.bg,
-                    color: p.fg,
-                    fontWeight: 700,
-                    fontSize: 11,
-                    padding: "6px 12px",
-                    borderRadius: 20,
-                    border: `1px solid ${T.border2}`,
-                  }}
-                >
-                  {p.l}
-                </span>
+                <span key={p.l} style={{ background: p.bg, color: p.fg, fontWeight: 700, fontSize: 12, padding: "6px 14px", borderRadius: 20, border: `1px solid ${T.border2}` }}>{p.l}</span>
               ))}
             </div>
-
-            <div
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: 10,
-              }}
-            >
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
               <button
                 onClick={() => navigate("/browse")}
                 style={{
-                  display: "flex",
+                  display: "inline-flex",
                   alignItems: "center",
-                  justifyContent: "center",
                   gap: 8,
-                  padding: "12px 20px",
+                  padding: isMobile ? "11px 20px" : "13px 28px",
                   borderRadius: 12,
                   background: `linear-gradient(135deg,${T.a3},${T.a4})`,
                   color: "#fff",
-                  fontSize: 14,
+                  fontSize: isMobile ? 13 : 14,
                   fontWeight: 700,
                   border: "none",
                   cursor: "pointer",
-                  flex: isMobile ? 1 : "unset",
-                  minWidth: isMobile ? 0 : 180,
+                  fontFamily: "'Clash Display',sans-serif",
+                  boxShadow: `0 8px 28px ${T.a3}44`,
+                  transition: "transform 0.15s,box-shadow 0.15s"
                 }}
-              >
-                <Icon path={I.search} size={15} color="#fff" />
-                Browse Jobs
+                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = `0 12px 36px ${T.a3}66`; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = `0 8px 28px ${T.a3}44`; }}>
+                <Icon path={I.search} size={15} color="#fff" />Browse All Jobs
               </button>
-
               <button
                 onClick={() => navigate("/browse/govt")}
                 style={{
-                  display: "flex",
+                  display: "inline-flex",
                   alignItems: "center",
-                  justifyContent: "center",
                   gap: 8,
-                  padding: "12px 20px",
+                  padding: isMobile ? "11px 18px" : "13px 24px",
                   borderRadius: 12,
                   background: T.gbBg,
                   color: T.a6,
-                  fontSize: 14,
+                  fontSize: isMobile ? 13 : 14,
                   fontWeight: 700,
                   border: `1px solid ${T.a6}44`,
                   cursor: "pointer",
-                  flex: isMobile ? 1 : "unset",
-                  minWidth: isMobile ? 0 : 180,
+                  fontFamily: "'Clash Display',sans-serif",
+                  transition: "transform 0.15s"
                 }}
-              >
-                <Icon path={I.govt} size={15} color={T.a6} />
-                Govt Jobs
+                onMouseEnter={e => e.currentTarget.style.transform = "translateY(-2px)"}
+                onMouseLeave={e => e.currentTarget.style.transform = "none"}>
+                <Icon path={I.govt} size={15} color={T.a6} />Govt Jobs
               </button>
             </div>
           </div>
 
-          {w > 900 && (
-            <div
-              style={{
+          {w > 860 && (
+            <div style={{ width: 440, flexShrink: 0, position: "relative" }}>
+              <div style={{
                 width: "100%",
-                maxWidth: 420,
-                flexShrink: 0,
-              }}
-            >
-              <div
-                style={{
-                  width: "100%",
-                  height: 360,
-                  borderRadius: 28,
-                  background: `linear-gradient(135deg,${T.bg2},${T.bg3})`,
-                  border: `1px solid ${T.border2}`,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  overflow: "hidden",
-                }}
-              >
-                <div
-                  style={{
-                    textAlign: "center",
-                    padding: 30,
-                  }}
-                >
-                  <div
-                    style={{
-                      fontSize: 64,
-                      marginBottom: 20,
-                    }}
-                  >
-                    💼
-                  </div>
-
-                  <div
-                    style={{
-                      fontSize: 28,
-                      fontWeight: 700,
-                      color: T.text,
-                      marginBottom: 10,
-                    }}
-                  >
-                    {jobs.length}+ Jobs
-                  </div>
-
-                  <div
-                    style={{
-                      fontSize: 14,
-                      color: T.text2,
-                    }}
-                  >
-                    Updated Daily
+                height: 400,
+                borderRadius: 28,
+                background: `linear-gradient(135deg,${T.bg2},${T.bg3})`,
+                border: `1px solid ${T.border2}`,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                position: "relative",
+                overflow: "hidden",
+                boxShadow: `0 24px 80px rgba(0,0,0,0.25)`
+              }}>
+                <div style={{ position: "absolute", width: 340, height: 340, borderRadius: "50%", background: `radial-gradient(ellipse,${T.ms2} 0%,transparent 70%)`, top: "50%", left: "50%", transform: "translate(-50%,-50%)" }} />
+                <svg viewBox="0 0 400 300" width="380" height="280" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="118" y="52" width="204" height="148" rx="10" fill="none" stroke={T.a3} strokeWidth="1.8" opacity="0.55"/>
+                  <rect x="118" y="52" width="204" height="24" rx="10" fill={T.a3} opacity="0.2"/>
+                  <circle cx="131" cy="64" r="4" fill={T.a2} opacity="0.85"/>
+                  <circle cx="145" cy="64" r="4" fill={T.a5} opacity="0.85"/>
+                  <circle cx="159" cy="64" r="4" fill={T.a6} opacity="0.85"/>
+                  <rect x="133" y="87" width="80" height="8" rx="4" fill={T.a3} opacity="0.45"/>
+                  <rect x="133" y="102" width="120" height="5" rx="2.5" fill={T.text2} opacity="0.15"/>
+                  <rect x="133" y="113" width="100" height="5" rx="2.5" fill={T.text2} opacity="0.12"/>
+                  <rect x="133" y="124" width="110" height="5" rx="2.5" fill={T.text2} opacity="0.12"/>
+                  <rect x="244" y="112" width="14" height="36" rx="3.5" fill={T.a3} opacity="0.5"/>
+                  <rect x="262" y="100" width="14" height="48" rx="3.5" fill={T.accent} opacity="0.5"/>
+                  <rect x="280" y="90" width="14" height="58" rx="3.5" fill={T.a6} opacity="0.5"/>
+                  <rect x="208" y="200" width="7" height="28" rx="3" fill={T.border2} opacity="0.7"/>
+                  <rect x="186" y="226" width="52" height="7" rx="3.5" fill={T.border2} opacity="0.7"/>
+                  <circle cx="86" cy="126" r="19" fill={T.a4} opacity="0.65"/>
+                  <rect x="72" y="146" width="28" height="54" rx="10" fill={T.a4} opacity="0.45"/>
+                  <line x1="86" y1="160" x2="118" y2="128" stroke={T.a4} strokeWidth="8" strokeLinecap="round" opacity="0.45"/>
+                  <circle cx="200" cy="194" r="16" fill={T.a5} opacity="0.65"/>
+                  <rect x="188" y="211" width="24" height="34" rx="8" fill={T.a5} opacity="0.45"/>
+                  <rect x="172" y="240" width="56" height="7" rx="3" fill={T.border2} opacity="0.6"/>
+                  <rect x="177" y="224" width="46" height="20" rx="4" fill={T.bg3} stroke={T.border2} strokeWidth="1.5" opacity="0.9"/>
+                  <rect x="181" y="228" width="38" height="13" rx="2" fill={T.a3} opacity="0.18"/>
+                  <circle cx="324" cy="120" r="19" fill={T.a2} opacity="0.65"/>
+                  <rect x="310" y="140" width="28" height="56" rx="10" fill={T.a2} opacity="0.45"/>
+                  <line x1="310" y1="156" x2="320" y2="142" stroke={T.a2} strokeWidth="8" strokeLinecap="round" opacity="0.45"/>
+                  <rect x="50" y="54" width="40" height="40" rx="12" fill={T.ms2} stroke={T.a3} strokeWidth="1.5" opacity="0.95"/>
+                  <rect x="62" y="78" width="5" height="10" rx="2.5" fill={T.a3}/>
+                  <rect x="71" y="72" width="5" height="16" rx="2.5" fill={T.a3}/>
+                  <rect x="80" y="65" width="5" height="23" rx="2.5" fill={T.a3}/>
+                  <rect x="322" y="50" width="40" height="40" rx="12" fill={T.ms1} stroke={T.a4} strokeWidth="1.5" opacity="0.95"/>
+                  <rect x="333" y="65" width="18" height="14" rx="3" fill="none" stroke={T.a4} strokeWidth="1.5"/>
+                  <rect x="336" y="61" width="12" height="5" rx="2.5" fill="none" stroke={T.a4} strokeWidth="1.5"/>
+                  <rect x="50" y="190" width="36" height="36" rx="11" fill={T.ms4} stroke={T.a6} strokeWidth="1.5" opacity="0.9"/>
+                  <path d="M68 197 C64 197 61 200 61 204 L61 213 L75 213 L75 204 C75 200 72 197 68 197Z" fill="none" stroke={T.a6} strokeWidth="1.5"/>
+                  <circle cx="68" cy="216" r="2.2" fill={T.a6}/>
+                  <text x="44" y="162" fontSize="18" fill={T.a5} opacity="0.4">✦</text>
+                  <text x="360" y="185" fontSize="12" fill={T.a3} opacity="0.4">✦</text>
+                  <text x="166" y="46" fontSize="14" fill={T.a4} opacity="0.4">✦</text>
+                  <text x="346" y="168" fontSize="10" fill={T.accent} opacity="0.5">✦</text>
+                  <text x="98" y="250" fontSize="10" fill={T.a3} opacity="0.35">✦</text>
+                </svg>
+              </div>
+              <div style={{ position: "absolute", bottom: -20, left: -22, background: T.bg2, border: `1px solid ${T.border2}`, borderRadius: 16, padding: "12px 16px", boxShadow: "0 12px 40px rgba(0,0,0,0.3)", display: "flex", alignItems: "center", gap: 10, backdropFilter: "blur(12px)", minWidth: 180 }}>
+                <div style={{ width: 40, height: 40, borderRadius: 11, background: T.gbBg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>🎯</div>
+                <div>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: T.text }}>{jobs.length}+ listings</div>
+                  <div style={{ fontSize: 11, color: T.a6, display: "flex", alignItems: "center", gap: 5, marginTop: 3 }}>
+                    <div style={{ width: 6, height: 6, borderRadius: "50%", background: T.a6, animation: "blink 2s infinite" }} />
+                    Updated today
                   </div>
                 </div>
+              </div>
+              <div style={{ position: "absolute", top: -16, right: -16, background: `linear-gradient(135deg,${T.a3},${T.a4})`, borderRadius: 22, padding: "8px 18px", fontSize: 12, fontWeight: 700, color: "#fff", boxShadow: `0 6px 20px ${T.a3}55` }}>🔥 Hot Jobs</div>
+              <div style={{ position: "absolute", bottom: 56, right: -22, background: T.bg2, border: `1px solid ${T.border2}`, borderRadius: 14, padding: "9px 14px", boxShadow: "0 6px 24px rgba(0,0,0,0.25)" }}>
+                <div style={{ fontSize: 13, color: T.text, fontWeight: 600 }}>
+                  <span style={{ color: T.accent, fontWeight: 700 }}>{jobs.filter(j => isToday(j.posted)).length}+</span> jobs posted
+                </div>
+                <div style={{ fontSize: 11, color: T.text2, marginTop: 2 }}>today</div>
               </div>
             </div>
           )}
         </div>
       </div>
 
-      <div
-        style={{
-          padding: isMobile ? "1rem" : "2rem",
-          maxWidth: 1280,
-          margin: "0 auto",
-          width: "100%",
-          boxSizing: "border-box",
-        }}
-      >
-        {recent.length > 0 && (
-          <div
-            style={{
-              marginBottom: "2rem",
-              background: T.bg2,
-              border: `1px solid ${T.border}`,
-              borderRadius: 14,
-              padding: "1rem",
-              overflow: "hidden",
-            }}
-          >
-            <div
-              style={{
-                fontSize: 11,
-                textTransform: "uppercase",
-                letterSpacing: 2,
-                color: T.text3,
-                fontWeight: 600,
-                marginBottom: "0.75rem",
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-              }}
-            >
-              <Icon path={I.bell} size={12} color={T.text3} />
-              Recently published
-            </div>
+      <div style={{ padding: isMobile ? "1.25rem 1rem" : "2.5rem 3rem", maxWidth: 1280, margin: "0 auto", width: "100%", boxSizing: "border-box" }}>
 
+        {recent.length > 0 && (
+          <div style={{ marginBottom: "2rem", background: T.bg2, border: `1px solid ${T.border}`, borderRadius: 14, padding: "1rem" }}>
+            <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 2, color: T.text3, fontWeight: 600, marginBottom: "0.75rem", display: "flex", alignItems: "center", gap: 6 }}>
+              <Icon path={I.bell} size={12} color={T.text3} /> Recently published
+            </div>
+            <style>{`.rscroll::-webkit-scrollbar{display:none}`}</style>
             <div
               ref={scrollRef}
-              style={{
-                display: "flex",
-                gap: "0.75rem",
-                overflowX: "auto",
-                scrollbarWidth: "none",
-                WebkitOverflowScrolling: "touch",
-                paddingBottom: 4,
-              }}
+              className="rscroll"
+              style={{ display: "flex", gap: "0.75rem", overflowX: "auto", WebkitOverflowScrolling: "touch", scrollbarWidth: "none", msOverflowStyle: "none", paddingBottom: 4 }}
             >
               {[...recent, ...recent].map((j, i) => {
                 const _isNew = isNew(j.posted);
-
                 return (
                   <div
                     key={i}
@@ -399,76 +281,31 @@ export default function HomeView({ jobs, T, isMobile, setSelJob, onSave }) {
                       alignItems: "center",
                       gap: 8,
                       flexShrink: 0,
+                      position: "relative",
                       background: T.bg3,
-                      border: `1px solid ${
-                        _isNew ? "#ff527966" : T.border2
-                      }`,
+                      border: `1px solid ${_isNew ? "#ff527966" : T.border2}`,
                       borderRadius: 10,
                       padding: "8px 12px",
                       cursor: "pointer",
-                      minWidth: isMobile ? 180 : 220,
-                      maxWidth: 240,
+                      transition: "border-color 0.15s",
+                      minWidth: isMobile ? 180 : 215
                     }}
-                  >
-                    <div
-                      style={{
-                        width: 32,
-                        height: 32,
-                        borderRadius: 8,
-                        background: T.bg2,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexShrink: 0,
-                        overflow: "hidden",
-                      }}
-                    >
-                      {j.logo ? (
-                        <img
-                          src={j.logo}
-                          alt={j.company}
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "contain",
-                          }}
-                        />
-                      ) : (
-                        <span>{j.emoji}</span>
-                      )}
-                    </div>
-
-                    <div
-                      style={{
-                        flex: 1,
-                        minWidth: 0,
-                      }}
-                    >
-                      <div
-                        style={{
-                          fontSize: 12,
-                          fontWeight: 700,
-                          color: T.text,
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                        }}
-                      >
-                        {j.title}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = T.a3; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = _isNew ? "#ff527966" : T.border2; }}>
+                    {_isNew && (
+                      <div style={{ position: "absolute", top: -7, left: 8, background: "linear-gradient(135deg,#ff5279,#ff8c42)", color: "#fff", fontSize: 8, fontWeight: 800, padding: "1px 5px", borderRadius: 20, letterSpacing: 0.8, lineHeight: 1.6 }}>
+                        NEW
                       </div>
-
-                      <div
-                        style={{
-                          fontSize: 11,
-                          color: T.text2,
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                        }}
-                      >
-                        {j.company}
-                      </div>
+                    )}
+                    <div style={{ width: 28, height: 28, borderRadius: 7, background: T.bg2, border: `1px solid ${T.border2}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, overflow: "hidden", flexShrink: 0 }}>
+                      {j.logo ? <img src={j.logo} alt={j.company} style={{ width: "100%", height: "100%", objectFit: "contain", padding: 2 }} onError={(e) => { e.target.style.display = "none"; e.target.nextSibling.style.display = "flex"; }} /> : null}
+                      <span style={{ display: j.logo ? "none" : "flex", alignItems: "center", justifyContent: "center", width: "100%", height: "100%" }}>{j.emoji}</span>
                     </div>
+                    <div style={{ minWidth: 0, flex: 1 }}>
+                      <div style={{ fontFamily: "'Clash Display',sans-serif", fontSize: 12, fontWeight: 600, color: T.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: isMobile ? 90 : 110 }}>{j.title}</div>
+                      <div style={{ fontSize: 11, color: T.text2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{j.company}</div>
+                    </div>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: T.a3, flexShrink: 0 }}>{j.salary}</span>
                   </div>
                 );
               })}
@@ -477,103 +314,72 @@ export default function HomeView({ jobs, T, isMobile, setSelJob, onSave }) {
         )}
 
         <div style={{ marginBottom: "2rem" }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginBottom: "1rem",
-              gap: 10,
-              flexWrap: "wrap",
-            }}
-          >
-            <div
-              style={{
-                fontFamily: "'Clash Display',sans-serif",
-                fontSize: 20,
-                fontWeight: 700,
-                color: T.text,
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-              }}
-            >
-              <Icon path={I.bell} size={18} color={T.a5} />
-              Featured today
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem" }}>
+            <div style={{ fontFamily: "'Clash Display',sans-serif", fontSize: isMobile ? 17 : 20, fontWeight: 700, color: T.text, display: "flex", alignItems: "center", gap: 8 }}>
+              <Icon path={I.bell} size={18} color={T.a5} /> Featured today
             </div>
-
-            <button
-              onClick={() => navigate("/browse")}
-              style={{
-                fontSize: 13,
-                color: T.a3,
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-              }}
-            >
-              See all →
-            </button>
+            <button onClick={() => navigate("/browse")} style={{ fontSize: 13, color: T.a3, background: "none", border: "none", cursor: "pointer", fontFamily: "'Satoshi',sans-serif" }}>See all →</button>
           </div>
-
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns:
-                w < 640
-                  ? "1fr"
-                  : w < 1000
-                  ? "1fr 1fr"
-                  : "repeat(3,1fr)",
-              gap: "1rem",
-            }}
-          >
+          <div style={{ display: "grid", gridTemplateColumns: gridCols, gap: "0.875rem" }}>
             {display.map((j) => (
-              <JobCard
+              <JobCard key={j.id} job={j} onClick={setSelJob} onSave={onSave} T={T} isMobile={isMobile} />
+            ))}
+          </div>
+        </div>
+
+        <div style={{
+          background: `linear-gradient(135deg,${T.ms4},${T.ms1})`,
+          borderRadius: 16,
+          padding: isMobile ? "1rem" : "1.5rem",
+          marginBottom: "2rem",
+          border: `1px solid ${T.border}`
+        }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem" }}>
+            <div style={{ fontFamily: "'Clash Display',sans-serif", fontSize: isMobile ? 17 : 20, fontWeight: 700, color: T.text, display: "flex", alignItems: "center", gap: 8 }}>
+              <Icon path={I.govt} size={18} color={T.a6} /> Govt jobs spotlight
+            </div>
+            <button onClick={() => navigate("/browse/govt")} style={{ fontSize: 13, color: T.a6, background: "none", border: "none", cursor: "pointer", fontFamily: "'Satoshi',sans-serif" }}>See all →</button>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {govtJobs.map((j) => (
+              <div
                 key={j.id}
-                job={j}
-                onClick={setSelJob}
-                onSave={onSave}
-                T={T}
-                isMobile={isMobile}
-              />
+                onClick={() => setSelJob(j)}
+                style={{
+                  background: T.bg2,
+                  border: `1px solid ${T.border}`,
+                  borderRadius: 12,
+                  padding: isMobile ? "10px 12px" : "14px 16px",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: isMobile ? 10 : 14,
+                  transition: "border-color 0.15s"
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.borderColor = T.a6}
+                onMouseLeave={(e) => e.currentTarget.style.borderColor = T.border}>
+                <span style={{ fontSize: isMobile ? 22 : 28, flexShrink: 0 }}>{j.emoji}</span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontFamily: "'Clash Display',sans-serif", fontSize: isMobile ? 13 : 14, fontWeight: 600, color: T.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{j.title}</div>
+                  <div style={{ fontSize: 12, color: T.text2, marginTop: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{j.company} · {j.location}</div>
+                </div>
+                <div style={{ textAlign: "right", flexShrink: 0 }}>
+                  <div style={{ fontSize: isMobile ? 12 : 13, fontWeight: 700, color: T.a6 }}>{j.salary}</div>
+                  <div style={{ fontSize: 11, color: T.text3, marginTop: 2 }}>{j.posted}</div>
+                </div>
+              </div>
             ))}
           </div>
         </div>
 
         <div style={{ marginBottom: "2rem" }}>
-          <div
-            style={{
-              fontFamily: "'Clash Display',sans-serif",
-              fontSize: 20,
-              fontWeight: 700,
-              color: T.text,
-              marginBottom: "1rem",
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-            }}
-          >
-            <Icon path={I.grid} size={18} color={T.a3} />
-            Browse by category
+          <div style={{ fontFamily: "'Clash Display',sans-serif", fontSize: isMobile ? 17 : 20, fontWeight: 700, color: T.text, marginBottom: "1.25rem", display: "flex", alignItems: "center", gap: 8 }}>
+            <Icon path={I.grid} size={18} color={T.a3} /> Browse by category
           </div>
-
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns:
-                w < 500
-                  ? "1fr 1fr"
-                  : w < 900
-                  ? "repeat(3,1fr)"
-                  : "repeat(4,1fr)",
-              gap: 12,
-            }}
-          >
+          <div style={{ display: "grid", gridTemplateColumns: catCols, gap: 12 }}>
             {CATS.slice(1).map((c) => {
               const col = c.color ? T[c.color] : T.a3;
               const cnt = jobs.filter((j) => j.cat === c.id).length;
-
               return (
                 <button
                   key={c.id}
@@ -582,50 +388,23 @@ export default function HomeView({ jobs, T, isMobile, setSelJob, onSave }) {
                     background: T.cardBg,
                     border: `1px solid ${T.border}`,
                     borderRadius: 14,
-                    padding: "1rem",
+                    padding: isMobile ? "1rem" : "1.25rem",
                     cursor: "pointer",
                     textAlign: "left",
+                    transition: "all 0.18s",
                     display: "flex",
                     flexDirection: "column",
                     gap: 10,
+                    boxSizing: "border-box"
                   }}
-                >
-                  <div
-                    style={{
-                      width: 44,
-                      height: 44,
-                      borderRadius: 11,
-                      background: `${col}18`,
-                      border: `1px solid ${col}33`,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Icon path={I[c.ic]} size={22} color={col} />
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = col; e.currentTarget.style.background = T.bg3; e.currentTarget.style.transform = "translateY(-3px)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.background = T.cardBg; e.currentTarget.style.transform = "none"; }}>
+                  <div style={{ width: isMobile ? 36 : 44, height: isMobile ? 36 : 44, borderRadius: 11, background: `${col}18`, border: `1px solid ${col}33`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <Icon path={I[c.ic]} size={isMobile ? 18 : 22} color={col} />
                   </div>
-
                   <div>
-                    <div
-                      style={{
-                        fontSize: 14,
-                        fontWeight: 700,
-                        color: T.text,
-                        marginBottom: 4,
-                      }}
-                    >
-                      {c.label}
-                    </div>
-
-                    <div
-                      style={{
-                        fontSize: 12,
-                        color: col,
-                        fontWeight: 600,
-                      }}
-                    >
-                      {cnt} jobs →
-                    </div>
+                    <div style={{ fontFamily: "'Clash Display',sans-serif", fontSize: isMobile ? 13 : 14, fontWeight: 600, color: T.text, marginBottom: 4 }}>{c.label}</div>
+                    <div style={{ fontSize: 12, color: col, fontWeight: 600 }}>{cnt} jobs →</div>
                   </div>
                 </button>
               );
