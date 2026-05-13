@@ -37,12 +37,12 @@ export default function JobCard({ job, onClick, onSave, T }) {
       style={{
         background: T.bg2,
         border: `1px solid ${hovered ? (isGovt ? T.a6 : T.a3) : T.border2}`,
-        borderRadius: 12,
-        padding: "12px",
+        borderRadius: 10,
+        padding: "14px",
         cursor: "pointer",
         transition: "all 0.2s",
-        transform: hovered ? "translateY(-4px)" : "none",
-        boxShadow: hovered ? `0 8px 24px ${isGovt ? "rgba(52,211,153,0.15)" : "rgba(14,165,233,0.15)"}` : "none",
+        transform: hovered ? "translateY(-3px)" : "none",
+        boxShadow: hovered ? `0 8px 20px ${isGovt ? "rgba(52,211,153,0.12)" : "rgba(14,165,233,0.12)"}` : "none",
         display: "flex",
         flexDirection: "column",
         gap: 10,
@@ -50,7 +50,7 @@ export default function JobCard({ job, onClick, onSave, T }) {
       }}
     >
       {_isNew && (
-        <div style={{ position: "absolute", top: -8, left: 16, background: "linear-gradient(135deg,#ff5279,#ff8c42)", color: "#fff", fontSize: 10, fontWeight: 800, padding: "2px 10px", borderRadius: 20, letterSpacing: 1, zIndex: 2, boxShadow: "0 2px 8px rgba(255,82,121,0.4)" }}>
+        <div style={{ position: "absolute", top: -8, left: 14, background: "linear-gradient(135deg,#ff5279,#ff8c42)", color: "#fff", fontSize: 9, fontWeight: 800, padding: "2px 8px", borderRadius: 16, letterSpacing: 0.5, zIndex: 2, boxShadow: "0 2px 6px rgba(255,82,121,0.3)" }}>
           ✦ NEW
         </div>
       )}
@@ -59,11 +59,11 @@ export default function JobCard({ job, onClick, onSave, T }) {
         onClick={(e) => { e.stopPropagation(); onSave(job.id); }}
         style={{
           position: "absolute",
-          top: 12,
-          right: 12,
-          width: 32,
-          height: 32,
-          borderRadius: 8,
+          top: 10,
+          right: 10,
+          width: 28,
+          height: 28,
+          borderRadius: 6,
           background: job.saved ? T.a3 : "transparent",
           border: `1px solid ${job.saved ? T.a3 : T.border2}`,
           cursor: "pointer",
@@ -74,22 +74,22 @@ export default function JobCard({ job, onClick, onSave, T }) {
           flexShrink: 0,
         }}
       >
-        <Icon path={I.bookmark} size={14} color={job.saved ? T.bg : T.text2} fill={job.saved} />
+        <Icon path={I.bookmark} size={12} color={job.saved ? T.bg : T.text2} fill={job.saved} />
       </button>
 
       <div onClick={() => onClick(job)}>
-        <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+        <div style={{ display: "flex", gap: 10, alignItems: "flex-start", paddingRight: 30 }}>
           <div
             style={{
-              width: 40,
-              height: 40,
+              width: 36,
+              height: 36,
               borderRadius: 8,
               background: T.bg3,
               border: `1px solid ${T.border}`,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: 20,
+              fontSize: 18,
               flexShrink: 0,
               overflow: "hidden",
             }}
@@ -98,7 +98,7 @@ export default function JobCard({ job, onClick, onSave, T }) {
               <img
                 src={job.logo}
                 alt={job.company}
-                style={{ width: "100%", height: "100%", objectFit: "contain", padding: 4 }}
+                style={{ width: "100%", height: "100%", objectFit: "contain", padding: 3 }}
                 onError={(e) => {
                   e.target.style.display = "none";
                   e.target.nextSibling.style.display = "flex";
@@ -112,12 +112,12 @@ export default function JobCard({ job, onClick, onSave, T }) {
           <div style={{ flex: 1, minWidth: 0 }}>
             <div
               style={{
-                fontSize: 12,
+                fontSize: 11,
                 fontWeight: 700,
                 color: T.a3,
                 textTransform: "uppercase",
-                letterSpacing: 0.5,
-                marginBottom: 3,
+                letterSpacing: 0.3,
+                marginBottom: 2,
               }}
             >
               {job.type}
@@ -127,16 +127,16 @@ export default function JobCard({ job, onClick, onSave, T }) {
                 fontSize: 13,
                 fontWeight: 700,
                 color: T.text,
-                lineHeight: 1.3,
+                lineHeight: 1.2,
+                marginBottom: 3,
               }}
             >
               {job.title}
             </div>
             <div
               style={{
-                fontSize: 12,
+                fontSize: 11,
                 color: T.text2,
-                marginTop: 2,
               }}
             >
               {job.company}
@@ -146,24 +146,24 @@ export default function JobCard({ job, onClick, onSave, T }) {
 
         {isGovt ? (
           <>
-            <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 8 }}>
-              <Icon path={I.map} size={12} color={T.text3} />
-              <span style={{ fontSize: 12, color: T.text2 }}>{job.location}</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 8, fontSize: 10 }}>
+              <Icon path={I.map} size={10} color={T.text3} />
+              <span style={{ color: T.text2 }}>{job.location}</span>
             </div>
-            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 8 }}>
+            <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginTop: 8 }}>
               {job.vacancies && (
                 <span
                   style={{
                     background: "rgba(52,211,153,0.12)",
                     border: "1px solid rgba(52,211,153,0.3)",
                     color: "#34d399",
-                    fontSize: 11,
+                    fontSize: 10,
                     fontWeight: 700,
-                    padding: "4px 10px",
-                    borderRadius: 6,
+                    padding: "2px 7px",
+                    borderRadius: 4,
                   }}
                 >
-                  🏛️ {job.vacancies} Posts
+                  🏛️ {job.vacancies}
                 </span>
               )}
               {job.startDate && (
@@ -172,10 +172,10 @@ export default function JobCard({ job, onClick, onSave, T }) {
                     background: "rgba(56,189,248,0.12)",
                     border: "1px solid rgba(56,189,248,0.3)",
                     color: "#38bdf8",
-                    fontSize: 11,
+                    fontSize: 10,
                     fontWeight: 600,
-                    padding: "4px 10px",
-                    borderRadius: 6,
+                    padding: "2px 7px",
+                    borderRadius: 4,
                   }}
                 >
                   🟢 {formatShortDate(job.startDate)}
@@ -187,27 +187,27 @@ export default function JobCard({ job, onClick, onSave, T }) {
                     background: isExpired(job.lastDate) ? "rgba(255,82,121,0.12)" : "rgba(251,146,60,0.12)",
                     border: `1px solid ${isExpired(job.lastDate) ? "rgba(255,82,121,0.3)" : "rgba(251,146,60,0.3)"}`,
                     color: isExpired(job.lastDate) ? "#ff5279" : "#fb923c",
-                    fontSize: 11,
+                    fontSize: 10,
                     fontWeight: 600,
-                    padding: "4px 10px",
-                    borderRadius: 6,
+                    padding: "2px 7px",
+                    borderRadius: 4,
                   }}
                 >
-                  {isExpired(job.lastDate) ? "⛔ Expired" : `⏰ ${formatShortDate(job.lastDate)}`}
+                  {isExpired(job.lastDate) ? "⛔" : "⏰"}
                 </span>
               )}
             </div>
           </>
         ) : (
           <>
-            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 6 }}>
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 8, alignItems: "center" }}>
               <span
                 style={{
-                  fontSize: 11,
+                  fontSize: 10,
                   background: T.ms2,
                   color: T.a5,
-                  padding: "3px 8px",
-                  borderRadius: 5,
+                  padding: "2px 6px",
+                  borderRadius: 4,
                   border: `1px solid rgba(16,185,129,0.2)`,
                 }}
               >
@@ -215,55 +215,56 @@ export default function JobCard({ job, onClick, onSave, T }) {
               </span>
               <span
                 style={{
-                  fontSize: 11,
+                  fontSize: 10,
                   background: T.ms1,
                   color: T.a3,
-                  padding: "3px 8px",
-                  borderRadius: 5,
+                  padding: "2px 6px",
+                  borderRadius: 4,
                   border: `1px solid rgba(14,165,233,0.2)`,
+                  fontWeight: 600,
                 }}
               >
                 💰 {cleanSalary(job.salary)}
               </span>
               <span
                 style={{
-                  fontSize: 11,
+                  fontSize: 10,
                   color: T.text3,
-                  padding: "3px 8px",
                 }}
               >
                 {job.exp}
               </span>
             </div>
 
-            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 6 }}>
-              {job.tags?.slice(0, 2).map((tag) => (
-                <span
-                  key={tag}
-                  style={{
-                    fontSize: 10,
-                    background: T.bg3,
-                    color: T.text2,
-                    padding: "2px 6px",
-                    borderRadius: 4,
-                    border: `1px solid ${T.border}`,
-                  }}
-                >
-                  {tag}
-                </span>
-              ))}
-              {job.tags?.length > 2 && (
-                <span
-                  style={{
-                    fontSize: 10,
-                    color: T.text3,
-                    padding: "2px 6px",
-                  }}
-                >
-                  +{job.tags.length - 2}
-                </span>
-              )}
-            </div>
+            {job.tags?.length > 0 && (
+              <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginTop: 6 }}>
+                {job.tags?.slice(0, 1).map((tag) => (
+                  <span
+                    key={tag}
+                    style={{
+                      fontSize: 10,
+                      background: T.bg3,
+                      color: T.text2,
+                      padding: "2px 6px",
+                      borderRadius: 3,
+                      border: `1px solid ${T.border}`,
+                    }}
+                  >
+                    {tag}
+                  </span>
+                ))}
+                {job.tags?.length > 1 && (
+                  <span
+                    style={{
+                      fontSize: 10,
+                      color: T.text3,
+                    }}
+                  >
+                    +{job.tags.length - 1}
+                  </span>
+                )}
+              </div>
+            )}
           </>
         )}
       </div>
