@@ -38,14 +38,14 @@ export default function JobCard({ job, onClick, onSave, T }) {
         background: T.bg2,
         border: `1px solid ${hovered ? (isGovt ? T.a6 : T.a3) : T.border2}`,
         borderRadius: 12,
-        padding: "16px",
+        padding: "12px",
         cursor: "pointer",
         transition: "all 0.2s",
         transform: hovered ? "translateY(-4px)" : "none",
         boxShadow: hovered ? `0 8px 24px ${isGovt ? "rgba(52,211,153,0.15)" : "rgba(14,165,233,0.15)"}` : "none",
         display: "flex",
         flexDirection: "column",
-        gap: 12,
+        gap: 10,
         position: "relative",
       }}
     >
@@ -78,18 +78,18 @@ export default function JobCard({ job, onClick, onSave, T }) {
       </button>
 
       <div onClick={() => onClick(job)}>
-        <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+        <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
           <div
             style={{
-              width: 48,
-              height: 48,
-              borderRadius: 10,
+              width: 40,
+              height: 40,
+              borderRadius: 8,
               background: T.bg3,
               border: `1px solid ${T.border}`,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: 24,
+              fontSize: 20,
               flexShrink: 0,
               overflow: "hidden",
             }}
@@ -112,19 +112,19 @@ export default function JobCard({ job, onClick, onSave, T }) {
           <div style={{ flex: 1, minWidth: 0 }}>
             <div
               style={{
-                fontSize: 13,
+                fontSize: 12,
                 fontWeight: 700,
                 color: T.a3,
                 textTransform: "uppercase",
                 letterSpacing: 0.5,
-                marginBottom: 4,
+                marginBottom: 3,
               }}
             >
               {job.type}
             </div>
             <div
               style={{
-                fontSize: 15,
+                fontSize: 13,
                 fontWeight: 700,
                 color: T.text,
                 lineHeight: 1.3,
@@ -134,9 +134,9 @@ export default function JobCard({ job, onClick, onSave, T }) {
             </div>
             <div
               style={{
-                fontSize: 13,
+                fontSize: 12,
                 color: T.text2,
-                marginTop: 4,
+                marginTop: 2,
               }}
             >
               {job.company}
@@ -200,14 +200,14 @@ export default function JobCard({ job, onClick, onSave, T }) {
           </>
         ) : (
           <>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 6 }}>
               <span
                 style={{
-                  fontSize: 12,
+                  fontSize: 11,
                   background: T.ms2,
                   color: T.a5,
-                  padding: "4px 10px",
-                  borderRadius: 6,
+                  padding: "3px 8px",
+                  borderRadius: 5,
                   border: `1px solid rgba(16,185,129,0.2)`,
                 }}
               >
@@ -215,11 +215,11 @@ export default function JobCard({ job, onClick, onSave, T }) {
               </span>
               <span
                 style={{
-                  fontSize: 12,
+                  fontSize: 11,
                   background: T.ms1,
                   color: T.a3,
-                  padding: "4px 10px",
-                  borderRadius: 6,
+                  padding: "3px 8px",
+                  borderRadius: 5,
                   border: `1px solid rgba(14,165,233,0.2)`,
                 }}
               >
@@ -227,25 +227,25 @@ export default function JobCard({ job, onClick, onSave, T }) {
               </span>
               <span
                 style={{
-                  fontSize: 12,
+                  fontSize: 11,
                   color: T.text3,
-                  padding: "4px 10px",
+                  padding: "3px 8px",
                 }}
               >
                 {job.exp}
               </span>
             </div>
 
-            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 8 }}>
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 6 }}>
               {job.tags?.slice(0, 2).map((tag) => (
                 <span
                   key={tag}
                   style={{
-                    fontSize: 11,
+                    fontSize: 10,
                     background: T.bg3,
                     color: T.text2,
-                    padding: "3px 8px",
-                    borderRadius: 5,
+                    padding: "2px 6px",
+                    borderRadius: 4,
                     border: `1px solid ${T.border}`,
                   }}
                 >
@@ -255,12 +255,12 @@ export default function JobCard({ job, onClick, onSave, T }) {
               {job.tags?.length > 2 && (
                 <span
                   style={{
-                    fontSize: 11,
+                    fontSize: 10,
                     color: T.text3,
-                    padding: "3px 8px",
+                    padding: "2px 6px",
                   }}
                 >
-                  +{job.tags.length - 2} more
+                  +{job.tags.length - 2}
                 </span>
               )}
             </div>
