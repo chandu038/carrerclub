@@ -38,20 +38,6 @@
 
 ---
 
-## 📁 Project Structure
-
-```
-carrerclub/
-└── frontend/
-    ├── public/
-    └── src/
-        ├── components/
-        ├── pages/
-        └── ...
-```
-
----
-
 ## 🚀 Getting Started
 
 ### Prerequisites
