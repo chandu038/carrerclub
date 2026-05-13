@@ -2,7 +2,7 @@
 
 > Browse full-time, part-time, government, and remote job opportunities across India — all in one place.
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-carrerclub.vercel.app-brightgreen?style=for-the-badge&logo=vercel)](https://carrerclub.vercel.app)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-carrerclub.in-brightgreen?style=for-the-badge&logo=vercel)](https://www.carrerclub.in)
 [![JavaScript](https://img.shields.io/badge/JavaScript-98%25-yellow?style=for-the-badge&logo=javascript)](https://github.com/chandu038/carrerclub)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 
@@ -12,7 +12,7 @@
 
 **CarrerClub** is a modern job-listing platform tailored for Indian job seekers. Whether you're a fresh graduate hunting your first role, an experienced professional looking for remote work, or someone eyeing government positions — CarrerClub brings it all under one roof.
 
-🌐 **Live site:** [carrerclub.vercel.app](https://carrerclub.vercel.app)
+🌐 **Live site:** [www.carrerclub.in](https://www.carrerclub.in)
 
 ---
 
@@ -33,8 +33,97 @@
 | Frontend | React.js           |
 | Styling  | CSS / Tailwind CSS |
 | Hosting  | Vercel             |
+| Domain   | carrerclub.in      |
 | Language | JavaScript (98.3%) |
 
 ---
 
 ## 📁 Project Structure
+
+```
+carrerclub/
+└── frontend/
+    ├── public/
+    └── src/
+        ├── components/
+        ├── pages/
+        └── ...
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (v16 or higher)
+- npm or yarn
+
+### Installation
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/chandu038/carrerclub.git
+cd carrerclub/frontend
+
+# 2. Install dependencies
+npm install
+
+# 3. Start the development server
+npm start
+```
+
+The app will be running at `http://localhost:3000`.
+
+### Build for Production
+
+```bash
+npm run build
+```
+
+---
+
+## 🌍 Deployment
+
+This project is deployed on **Vercel** with a custom domain at [www.carrerclub.in](https://www.carrerclub.in). Any push to the `main` branch automatically triggers a new deployment.
+
+To deploy your own fork:
+
+1. Fork this repository
+2. Connect it to your [Vercel](https://vercel.com) account
+3. Set the root directory to `frontend`
+4. Deploy 🎉
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Here's how:
+
+1. Fork the project
+2. Create a new branch: `git checkout -b feature/your-feature-name`
+3. Commit your changes: `git commit -m 'Add some feature'`
+4. Push to the branch: `git push origin feature/your-feature-name`
+5. Open a Pull Request
+
+---
+
+## 🐛 Issues
+
+Found a bug or have a feature request? [Open an issue](https://github.com/chandu038/carrerclub/issues) — all feedback is appreciated!
+
+---
+
+## 📄 License
+
+This project is open-source and available under the [MIT License](LICENSE).
+
+---
+
+## 👨‍💻 Author
+
+**Chandu** — [@chandu038](https://github.com/chandu038)
+
+---
+
+<p align="center">Made with ❤️ for Indian job seekers</p>
