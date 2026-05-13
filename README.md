@@ -7,7 +7,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 
 ---
-s
+
 ## 📌 About
 
 **CarrerClub** is a modern job-listing platform tailored for Indian job seekers. Whether you're a fresh graduate hunting your first role, an experienced professional looking for remote work, or someone eyeing government positions — CarrerClub brings it all under one roof.
