@@ -25,7 +25,7 @@ function isExpired(dateStr) {
   return new Date(dateStr) < new Date();
 }
 
-export default function JobCard({ job, onClick, onSave, T }) {
+export default function JobCard({ job, onClick, onSave, T, isMobile }) {
   const [hovered, setHovered] = useState(false);
   const _isNew   = isNew(job.posted);
   const isGovt   = job.cat === "govt";
@@ -38,14 +38,14 @@ export default function JobCard({ job, onClick, onSave, T }) {
         background: T.bg2,
         border: `1px solid ${hovered ? (isGovt ? T.a6 : T.a3) : T.border2}`,
         borderRadius: 10,
-        padding: "14px",
+        padding: isMobile ? "10px" : "14px",
         cursor: "pointer",
         transition: "all 0.2s",
         transform: hovered ? "translateY(-3px)" : "none",
         boxShadow: hovered ? `0 8px 20px ${isGovt ? "rgba(52,211,153,0.12)" : "rgba(14,165,233,0.12)"}` : "none",
         display: "flex",
         flexDirection: "column",
-        gap: 10,
+        gap: isMobile ? 8 : 10,
         position: "relative",
       }}
     >
@@ -112,11 +112,11 @@ export default function JobCard({ job, onClick, onSave, T }) {
           <div style={{ flex: 1, minWidth: 0 }}>
             <div
               style={{
-                fontSize: 11,
+                fontSize: isMobile ? 11 : 13,
                 fontWeight: 700,
                 color: T.a3,
                 textTransform: "uppercase",
-                letterSpacing: 0.3,
+                letterSpacing: isMobile ? 0.2 : 0.3,
                 marginBottom: 2,
               }}
             >
@@ -124,7 +124,7 @@ export default function JobCard({ job, onClick, onSave, T }) {
             </div>
             <div
               style={{
-                fontSize: 13,
+                fontSize: isMobile ? 12 : 13,
                 fontWeight: 700,
                 color: T.text,
                 lineHeight: 1.2,
@@ -135,7 +135,7 @@ export default function JobCard({ job, onClick, onSave, T }) {
             </div>
             <div
               style={{
-                fontSize: 11,
+                fontSize: isMobile ? 10 : 11,
                 color: T.text2,
               }}
             >
